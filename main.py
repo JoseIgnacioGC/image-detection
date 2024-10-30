@@ -1,6 +1,5 @@
 import cv2
-from cv2.gapi.wip.draw import Image
-
+from PIL import Image
 from src.shell_question import get_processor_option, ProcessorOption
 
 option = get_processor_option()
@@ -52,7 +51,11 @@ if raw_image:
         description = generate_image_description(
             processor=processor, model=model, raw_image=raw_image
         )
-        print("descripcion:", description)
+
+        descriptionFile = open("resources/description.txt", "w")
+        descriptionFile.write(description)
+        descriptionFile.close()
+
     except Exception as e:
         print(f"Error: {e}")
 else:
