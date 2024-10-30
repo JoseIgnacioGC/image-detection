@@ -1,26 +1,22 @@
+from src.img_captioning.generate_description import generate_image_description
+from src.img_captioning.charge_model import charge_model
 from src.get_images import raw_images
+from src.shell_question import get_processor_option
 
-from src.img_captioning.by_cpu import (
-    generate_image_description,
-    get_processor_and_model,
-)
+# https://huggingface.co/meta-llama/Llama-3.2-11B-Vision-Instruct
 
-processor, model = get_processor_and_model()
+processor_option = get_processor_option()
+processor_and_model = charge_model(processor_option)
+print("Model ready\n")
 
 for raw_image in raw_images:
     try:
         description = generate_image_description(
-            processor=processor, model=model, raw_image=raw_image
+            processor_option=processor_option,
+            raw_image=raw_image,
+            **processor_and_model
         )
     except Exception as e:
         print(e)
     else:
         print(description)
-
-# TODO: give the option to change processor
-# from src.shell_question import ProcessorOption, get_processor_option
-# processor = get_processor_option()
-# if processor == ProcessorOption.GPU:
-# import src.img_captioning.by_gpu
-# else:
-# import src.img_captioning.by_CPU
