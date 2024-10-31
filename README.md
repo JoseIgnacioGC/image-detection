@@ -1,5 +1,7 @@
 # pre-requisites
 
+1. Python 3.9-3.12
+
 1. Install [rust](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) in your pc
 
 1. Create the virtual env 

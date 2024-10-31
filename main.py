@@ -12,18 +12,16 @@ print("Model ready\n")
 
 raw_image = capture_image_from_camera()
 
-if raw_image:
-    try:
-        params = ImageDescriptionParams(raw_image, processor_and_model)
-        description = generate_image_description(
-            processor_option=processor_option, params=params
-        )
+if not raw_image:
+    raise Exception("No image was captured")
 
-        descriptionFile = open("resources/description.txt", "w")
-        descriptionFile.write(description)
-        descriptionFile.close()
-
-    except Exception as e:
-        print(f"Error: {e}")
+params = ImageDescriptionParams(raw_image, processor_and_model)
+try:
+    description = generate_image_description(
+        processor_option=processor_option, params=params
+    )
+except Exception as e:
+    print(f"Error when generating description: {e}")
 else:
-    print("no se capturo imagen.")
+    with open("resources/description.txt", "w") as descriptionFile:
+        descriptionFile.write(description)
