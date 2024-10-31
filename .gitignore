@@ -9,3 +9,4 @@ venv/
 # Others
 .vscode/
 
+resources/*
