@@ -1,9 +1,8 @@
-from PIL import Image
+from src.img_captioning.utils import IMAGE_CONDITION
+
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from transformers.modeling_utils import PreTrainedModel
-
-
-IMAGE_CONDITION = "a photography of"
+from PIL import Image
 
 
 def charge_model() -> dict[str, BlipProcessor | PreTrainedModel]:
@@ -13,10 +12,6 @@ def charge_model() -> dict[str, BlipProcessor | PreTrainedModel]:
     )
     return {"processor": processor, "model": model}
 
-def get_processor_and_model():
-    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
-    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
-    return processor, model
 
 def generate_image_description(
     raw_image: Image.Image, processor: BlipProcessor, model: PreTrainedModel
