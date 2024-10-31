@@ -1,3 +1,4 @@
+from src.img_captioning.utils import ImageDescriptionParams
 from src.capture_image import capture_image_from_camera
 from src.img_captioning.model_controller import charge_model
 from src.img_captioning.img_description_controller import generate_image_description
@@ -13,10 +14,9 @@ raw_image = capture_image_from_camera()
 
 if raw_image:
     try:
+        params = ImageDescriptionParams(raw_image, processor_and_model)
         description = generate_image_description(
-            processor_option=processor_option,
-            raw_image=raw_image,
-            **processor_and_model,
+            processor_option=processor_option, params=params
         )
 
         descriptionFile = open("resources/description.txt", "w")
