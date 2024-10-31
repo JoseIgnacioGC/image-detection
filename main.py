@@ -17,32 +17,39 @@ print("Model ready\n")
 
 def capture_image_from_camera():
     cap = cv2.VideoCapture(0)
-    letterColors: Scalar = (0, 255, 0)
-    description = "espacio pa capturar y q pa salir"
-    text_band_height = 60
+    font_color: Scalar = (0, 255, 0)
+    font_band_height = 60
     font_scale = 0.6
     font_thickness = 1
+
+    processing_img = False
+
+    top_text = "Procesando imagen..."
+    buttom_text = "<presiona q pa salir>"
     result_queue: Queue[str] = Queue()
-    processing = False
 
     while True:
         ret, frame = cap.read()
+        pressed_key = cv2.waitKey(1) & 0xFF
         if not ret:
             print("no hay camara")
+            break
+        if pressed_key == ord("q"):
+            print("Programa...")
             break
 
         # Check for results from background thread
         if not result_queue.empty():
-            description = result_queue.get()
-            description = "\n".join(
-                [description[i : i + 60] for i in range(0, len(description), 60)]
+            top_text = result_queue.get()
+            top_text = "\n".join(
+                [top_text[i : i + 60] for i in range(0, len(top_text), 60)]
             )
-            processing = False
+            processing_img = False
 
         display_frame = cv2.copyMakeBorder(
-            frame, 0, text_band_height, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0)
+            frame, 0, font_band_height, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0)
         )
-        lines = description.split("\n")
+        lines = [*top_text.split("\n"), buttom_text]
         y_offset = frame.shape[0] + 20
 
         for line in lines:
@@ -52,17 +59,16 @@ def capture_image_from_camera():
                 org=(10, y_offset),
                 fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                 fontScale=font_scale,
-                color=letterColors,
+                color=font_color,
                 thickness=font_thickness,
                 lineType=cv2.LINE_AA,
             )
             y_offset += 20
         cv2.imshow("camara", display_frame)
 
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord(" ") and not processing:
-            processing = True
-            description = "Procesando imagen..."
+        if not processing_img:
+            processing_img = True
+            # buttom_text = "Procesando imagen..."
             pil_image = convert_opencv_to_pil(frame)
             params = ImageDescriptionParams(pil_image, processor_and_model)
 
@@ -75,8 +81,6 @@ def capture_image_from_camera():
                 processor_option=processor_option,
                 params=params,
             )
-        elif key == ord("q"):
-            break
 
         keywords_theft = [
             "punch",
@@ -87,9 +91,9 @@ def capture_image_from_camera():
             "wepon",
             "gun",
         ]  # no se q mas agregar
-        is_a_thief = any(keyword in description for keyword in keywords_theft)
+        is_a_thief = any(keyword in top_text for keyword in keywords_theft)
         if is_a_thief:
-            letterColors: Scalar = (0, 0, 255)
+            font_color: Scalar = (0, 0, 255)
 
     cap.release()
     cv2.destroyAllWindows()
