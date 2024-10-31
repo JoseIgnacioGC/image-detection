@@ -18,7 +18,7 @@ print("Model ready\n")
 def capture_image_from_camera():
     cap = cv2.VideoCapture(0)
     font_color: Scalar = (0, 255, 0)
-    font_band_height = 60
+    font_band_height = 100
     font_scale = 0.6
     font_thickness = 1
 
