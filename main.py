@@ -5,6 +5,7 @@ from src.img_captioning.img_description_controller import generate_image_descrip
 from src.shell_question import get_processor_option
 
 import cv2
+from cv2.typing import Scalar
 
 
 processor_option = get_processor_option()
@@ -14,7 +15,7 @@ print("Model ready\n")
 
 def capture_image_from_camera():
     cap = cv2.VideoCapture(0)
-    letterColors = (0, 255, 0)
+    letterColors: Scalar = (0, 255, 0)
     description = "espacio pa capturar y q pa salir"
     text_band_height = 60
     font_scale = 0.6
@@ -34,13 +35,13 @@ def capture_image_from_camera():
 
         for line in lines:
             cv2.putText(
-                display_frame,
-                line,
-                (10, y_offset),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                font_scale,
-                letterColors,
-                font_thickness,
+                img=display_frame,
+                text=line,
+                org=(10, y_offset),
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                fontScale=font_scale,
+                color=letterColors,
+                thickness=font_thickness,
                 lineType=cv2.LINE_AA,
             )
             y_offset += 20
@@ -70,7 +71,7 @@ def capture_image_from_camera():
         ]  # no se q mas agregar
         is_a_thief = any(keyword in description for keyword in keywords_theft)
         if is_a_thief:
-            letterColors = (255, 0, 0)
+            letterColors: Scalar = (0, 0, 255)
 
     cap.release()
     cv2.destroyAllWindows()
