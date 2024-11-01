@@ -1,27 +1,44 @@
-from os import name, system
-from readchar import readkey, key
 from enum import Enum, auto
+from os import system, name
+from readchar import readkey, key
+
 
 class ProcessorOption(Enum):
+    LLAMA = auto()
     GPU = auto()
     CPU = auto()
 
+
+__options = tuple(ProcessorOption)
+__descriptions = {
+    ProcessorOption.LLAMA: "Llama (accurated)",
+    ProcessorOption.GPU: "GPU (fast/nvidia)",
+    ProcessorOption.CPU: "CPU (slow)",
+}
+
+
+def __print_options(chosen_option: ProcessorOption):
+    print("Choose an option using the arrow keys:\n")
+    for i, option in enumerate(__options):
+        arrow = "<" if option == chosen_option else " "
+        print(f"{i + 1}. {__descriptions[option]} {arrow}")
+
+
 def get_processor_option() -> ProcessorOption:
-    is_GPU = True
+    chosen_option: ProcessorOption = __options[0]
+
     while True:
-        system(("cls" if name == "nt" else "clear"))
-        first_arrow = "<" if is_GPU else " "
-        second_arrow = "<" if not is_GPU else " "
-        print("Choose an option using the arrow keys:")
-        print(
-            f"1. GPU (fast/nvidia) {first_arrow}\n2. CPU (slow) {second_arrow}",
-        )
+        system("cls" if name == "nt" else "clear")
+        __print_options(chosen_option)
 
         pressed_key = readkey()
+        match pressed_key:
+            case key.UP:
+                chosen_option = __options[(chosen_option.value + 1) % len(ProcessorOption)]
+            case key.DOWN:
+                chosen_option = __options[(chosen_option.value) % len(ProcessorOption)]
+            case key.ENTER:
+                break
+            case _: ...
 
-        if pressed_key == key.UP or pressed_key == key.DOWN:
-            is_GPU = not is_GPU
-        elif pressed_key == key.ENTER:
-            break
-
-    return ProcessorOption.GPU if is_GPU else ProcessorOption.CPU
+    return chosen_option
