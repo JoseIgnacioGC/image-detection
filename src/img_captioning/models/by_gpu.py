@@ -8,7 +8,6 @@ from src.img_captioning.utils import (
 import torch
 from transformers import BlipProcessor, BlipForConditionalGeneration
 
-
 def charge_model() -> ProcessorModel:
     processor = cast(
         BlipProcessor,
@@ -18,7 +17,6 @@ def charge_model() -> ProcessorModel:
         "Salesforce/blip-image-captioning-large", torch_dtype=torch.float16
     ).to("cuda")
     return ProcessorModel(processor=processor, model=model)
-
 
 def generate_image_description(params: ImageDescriptionParams) -> str:
     processor = params.ProcessorModel.processor

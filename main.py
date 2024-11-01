@@ -1,4 +1,4 @@
-from async_utils import run_in_background
+from src.async_utils import run_in_background
 from src.img_captioning.utils import ImageDescriptionParams
 from src.capture_image import convert_opencv_to_pil
 from src.img_captioning.model_controller import charge_model
