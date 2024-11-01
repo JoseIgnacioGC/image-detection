@@ -92,6 +92,8 @@ def capture_image_from_camera():
         is_a_thief = any(keyword in top_text for keyword in keywords_theft)
         if is_a_thief:
             font_color: Scalar = (0, 0, 255)
+        else:
+            font_color: Scalar = (0, 255, 0)
 
     cap.release()
     cv2.destroyAllWindows()
