@@ -34,7 +34,7 @@ def capture_image_from_camera():
             print("no hay camara")
             break
         if pressed_key == ord("q"):
-            print("Programa...")
+            print("Terminando programa...")
             break
 
         if not result_queue.empty():
