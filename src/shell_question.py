@@ -11,7 +11,7 @@ class ProcessorOption(Enum):
 
 __options = tuple(ProcessorOption)
 __descriptions = {
-    ProcessorOption.LLAMA: "Llama (accurated)",
+    ProcessorOption.LLAMA: "Llama (accurated [not available yet])",
     ProcessorOption.GPU: "GPU (fast/nvidia)",
     ProcessorOption.CPU: "CPU (slow)",
 }
