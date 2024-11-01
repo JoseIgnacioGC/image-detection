@@ -2,11 +2,9 @@ from os import name, system
 from readchar import readkey, key
 from enum import Enum, auto
 
-
 class ProcessorOption(Enum):
     GPU = auto()
     CPU = auto()
-
 
 def get_processor_option() -> ProcessorOption:
     is_GPU = True

@@ -7,7 +7,6 @@ from src.img_captioning.utils import (
 
 from transformers import BlipProcessor, BlipForConditionalGeneration
 
-
 def charge_model() -> ProcessorModel:
     processor = cast(
         BlipProcessor,
@@ -17,7 +16,6 @@ def charge_model() -> ProcessorModel:
         "Salesforce/blip-image-captioning-large"
     )
     return ProcessorModel(processor=processor, model=model)
-
 
 def generate_image_description(params: ImageDescriptionParams) -> str:
     processor = params.ProcessorModel.processor

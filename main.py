@@ -1,4 +1,4 @@
-from async_utils import run_in_background
+from src.async_utils import run_in_background
 from src.img_captioning.utils import ImageDescriptionParams
 from src.capture_image import convert_opencv_to_pil
 from src.img_captioning.model_controller import charge_model
@@ -9,7 +9,6 @@ from queue import Queue
 import cv2
 from cv2.typing import Scalar
 
-
 processor_option = get_processor_option()
 processor_and_model = charge_model(processor_option)
 print("Model ready\n")
@@ -18,7 +17,7 @@ print("Model ready\n")
 def capture_image_from_camera():
     cap = cv2.VideoCapture(0)
     font_color: Scalar = (0, 255, 0)
-    font_band_height = 100
+    font_band_height = 90
     font_scale = 0.6
     font_thickness = 1
 
@@ -38,7 +37,6 @@ def capture_image_from_camera():
             print("Programa...")
             break
 
-        # Check for results from background thread
         if not result_queue.empty():
             top_text = result_queue.get()
             top_text = "\n".join(
@@ -87,13 +85,16 @@ def capture_image_from_camera():
             "stabbed",
             "danger",
             "scared",
+            "knife",
             "pistol",
-            "wepon",
+            "weapon",
             "gun",
         ]  # no se q mas agregar
         is_a_thief = any(keyword in top_text for keyword in keywords_theft)
         if is_a_thief:
             font_color: Scalar = (0, 0, 255)
+        else:
+            font_color: Scalar = (0, 255, 0)
 
     cap.release()
     cv2.destroyAllWindows()
