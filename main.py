@@ -16,7 +16,8 @@ print("Model ready\n")
 
 def capture_image_from_camera():
     cap = cv2.VideoCapture(0)
-    font_color: Scalar = (0, 255, 0)
+    top_text_color: Scalar = (0, 255, 0)
+    exit_text_color: Scalar = (255, 255, 255)
     font_band_height = 90
     font_scale = 0.6
     font_thickness = 1
@@ -24,7 +25,7 @@ def capture_image_from_camera():
     processing_img = False
 
     top_text = "Procesando imagen..."
-    buttom_text = "<presiona q pa salir>"
+    exit_text = "<presiona q pa salir>"
     result_queue: Queue[str] = Queue()
 
     while True:
@@ -47,7 +48,7 @@ def capture_image_from_camera():
         display_frame = cv2.copyMakeBorder(
             frame, 0, font_band_height, 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0)
         )
-        lines = [*top_text.split("\n"), buttom_text]
+        lines = top_text.split("\n")
         y_offset = frame.shape[0] + 20
 
         for line in lines:
@@ -57,11 +58,23 @@ def capture_image_from_camera():
                 org=(10, y_offset),
                 fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                 fontScale=font_scale,
-                color=font_color,
+                color=top_text_color,
                 thickness=font_thickness,
                 lineType=cv2.LINE_AA,
             )
             y_offset += 20
+
+        cv2.putText(
+            img=display_frame,
+            text=exit_text,
+            org=(10, y_offset),
+            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+            fontScale=font_scale,
+            color=exit_text_color,
+            thickness=font_thickness,
+            lineType=cv2.LINE_AA,
+        )
+
         cv2.imshow("camara", display_frame)
 
         if not processing_img:
@@ -92,9 +105,9 @@ def capture_image_from_camera():
         ]  # no se q mas agregar
         is_a_thief = any(keyword in top_text for keyword in keywords_theft)
         if is_a_thief:
-            font_color: Scalar = (0, 0, 255)
+            top_text_color: Scalar = (0, 0, 255)
         else:
-            font_color: Scalar = (0, 255, 0)
+            top_text_color: Scalar = (0, 255, 0)
 
     cap.release()
     cv2.destroyAllWindows()
