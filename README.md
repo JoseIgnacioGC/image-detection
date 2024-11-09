@@ -1,4 +1,4 @@
-# pre-requisites
+# 🛠️ | pre-requisites
 
 1. Python 3.9-3.12
 
@@ -22,8 +22,14 @@
         pip install -r requirements.txt
     ```
 
-# After install a new `pip` librarie
+# 📦 | After install a new `pip` librarie
 
 ```bash
     pip freeze > requirements.txt
 ```
+
+# 👥 | Members
+
+José Leiva [@JoseIgnacioGC](https://github.com/JoseIgnacioGC)
+Martín León [@Martin19832](https://github.com/Martin19832)
+Benjamín Isasmendi [@Mapacheee](https://github.com/Mapacheee)
