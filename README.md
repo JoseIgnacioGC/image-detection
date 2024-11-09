@@ -30,6 +30,6 @@
 
 # 👥 | Members
 
-José Leiva [@JoseIgnacioGC](https://github.com/JoseIgnacioGC)
-Martín León [@Martin19832](https://github.com/Martin19832)
+José Leiva [@JoseIgnacioGC](https://github.com/JoseIgnacioGC)<br>
+Martín León [@Martin19832](https://github.com/Martin19832)<br>
 Benjamín Isasmendi [@Mapacheee](https://github.com/Mapacheee)
