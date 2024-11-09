@@ -4,14 +4,14 @@ from readchar import readkey, key
 
 
 class ProcessorOption(Enum):
-    LLAMA = auto()
+    Qwen2_2B = auto()
     GPU = auto()
     CPU = auto()
 
 
 __options = tuple(ProcessorOption)
 __descriptions = {
-    ProcessorOption.LLAMA: "Llama (accurated [not available yet])",
+    ProcessorOption.Qwen2_2B: "Qwen2_2B (accurated)",
     ProcessorOption.GPU: "GPU (fast/nvidia)",
     ProcessorOption.CPU: "CPU (slow)",
 }

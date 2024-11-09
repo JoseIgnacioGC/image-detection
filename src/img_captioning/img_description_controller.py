@@ -12,6 +12,6 @@ def generate_image_description(
         case ProcessorOption.CPU:
             from .models import by_cpu
             return by_cpu.generate_image_description(params)
-        case ProcessorOption.LLAMA:
+        case ProcessorOption.Qwen2_2B:
             from .models import by_llama
             return by_llama.generate_image_description(params)
