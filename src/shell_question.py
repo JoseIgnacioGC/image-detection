@@ -5,15 +5,13 @@ from readchar import readkey, key
 
 class ProcessorOption(Enum):
     Qwen2_2B = auto()
-    GPU = auto()
-    CPU = auto()
+    Salesforce = auto()
 
 
 __options = tuple(ProcessorOption)
 __descriptions = {
     ProcessorOption.Qwen2_2B: "Qwen2_2B (accurated)",
-    ProcessorOption.GPU: "GPU (fast/nvidia)",
-    ProcessorOption.CPU: "CPU (slow)",
+    ProcessorOption.Salesforce: "Salesforce (old)",
 }
 
 
