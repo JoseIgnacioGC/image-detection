@@ -12,6 +12,6 @@ def charge_model(
             from .models import by_cpu
             return by_cpu.charge_model()
         case ProcessorOption.Qwen2_2B:
-            from .models import by_llama
-            return by_llama.charge_model()
+            from .models import by_qwen2_2b
+            return by_qwen2_2b.charge_model()
         
