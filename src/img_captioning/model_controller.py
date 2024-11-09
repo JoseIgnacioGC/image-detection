@@ -12,6 +12,6 @@ def charge_model(
             from .models import by_cpu
             return by_cpu.charge_model()
         case ProcessorOption.LLAMA:
-            from .models import by_cpu
-            return by_cpu.charge_model()
+            from .models import by_llama
+            return by_llama.charge_model()
         
