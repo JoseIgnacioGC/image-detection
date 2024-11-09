@@ -2,8 +2,9 @@ import threading
 from typing import Any
 from collections.abc import Callable
 
+
 def run_in_background(
-    func: Callable, callback: Callable[[Any], None], *args, **kwargs
+    func: Callable[..., Any], callback: Callable[[Any], None], *args: Any, **kwargs: Any
 ) -> threading.Thread:
     def wrapped_func():
         result = func(*args, **kwargs)
