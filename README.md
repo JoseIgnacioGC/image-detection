@@ -30,6 +30,10 @@
 
 # 👥 | Members
 
-José Leiva [@JoseIgnacioGC](https://github.com/JoseIgnacioGC)<br>
-Martín León [@Martin19832](https://github.com/Martin19832)<br>
-Benjamín Isasmendi [@Mapacheee](https://github.com/Mapacheee)
+- José Leiva [@JoseIgnacioGC](https://github.com/JoseIgnacioGC)<br>
+- Martín León [@Martin19832](https://github.com/Martin19832)<br>
+- Benjamín Isasmendi [@Mapacheee](https://github.com/Mapacheee)
+
+# ⚰️ | Old Project
+
+- [@Mapacheee/IntelligentCamera](https://github.com/Mapacheee/IntelligentCamera)
