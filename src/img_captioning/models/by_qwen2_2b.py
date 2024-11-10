@@ -1,12 +1,11 @@
-import torch
+from src.utils import RESOURCES_DIR
 from src.img_captioning.utils import (
     ImageDescriptionParams,
     ProcessorModel,
 )
 
+import torch
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
-
-from utils import RESOURCES_DIR
 
 
 def charge_model() -> ProcessorModel:

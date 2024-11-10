@@ -1,9 +1,9 @@
+from src.utils import RESOURCES_DIR
+
 import json
 from datetime import datetime
 from typing import Any
 from dataclasses import dataclass, fields
-
-from utils import RESOURCES_DIR
 
 
 @dataclass
