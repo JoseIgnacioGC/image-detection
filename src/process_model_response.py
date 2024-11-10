@@ -3,6 +3,8 @@ from datetime import datetime
 from typing import Any
 from dataclasses import dataclass, fields
 
+from utils import RESOURCES_DIR
+
 
 @dataclass
 class ModelResponse:
@@ -28,10 +30,10 @@ def process_model_response(
         model_res = ModelResponse(**parsed_model_res)
         if image_description == model_res.image_description:
             return None
-        with open("./resources/logs.txt", "a") as f:
+        with open(RESOURCES_DIR / "logs.txt", "a") as f:
             f.write(f"{model_response_raw} - {datetime.now().replace(microsecond=0)}\n")
         return model_res
 
     except:
-        with open("./resources/error_response_logs.txt", "a") as f:
+        with open(RESOURCES_DIR / "error_response_logs.txt", "a") as f:
             f.write(f"{model_response_raw} - {datetime.now().replace(microsecond=0)}\n")

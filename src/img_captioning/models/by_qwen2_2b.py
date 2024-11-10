@@ -6,6 +6,8 @@ from src.img_captioning.utils import (
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
+from utils import RESOURCES_DIR
+
 
 def charge_model() -> ProcessorModel:
     model = None
@@ -15,7 +17,7 @@ def charge_model() -> ProcessorModel:
             torch_dtype=torch.bfloat16,
             attn_implementation="flash_attention_2",
             device_map="auto",
-            offload_folder=r"./../../../resources/offload",
+            offload_folder=RESOURCES_DIR / "offload",
             # offload_state_dict=True,
         )
     else:
@@ -23,7 +25,7 @@ def charge_model() -> ProcessorModel:
             "Qwen/Qwen2-VL-2B-Instruct",
             torch_dtype="auto",
             device_map="auto",
-            offload_folder=r"./../../../resources/offload",
+            offload_folder=RESOURCES_DIR / "offload",
         )
 
     min_pixels = 256 * 28 * 28

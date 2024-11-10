@@ -9,5 +9,5 @@ venv/
 # Others
 .vscode/
 
-resources/*
+resources/**
 credentials.yml
