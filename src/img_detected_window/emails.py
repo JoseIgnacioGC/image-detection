@@ -1,4 +1,4 @@
-from get_env_vars import credentials
+from get_credentials import credentials
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
