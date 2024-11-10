@@ -1,10 +1,9 @@
-from src.get_env_var import credentials
+from get_env_vars import credentials
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
-import window
 
 
 def send_email():
@@ -40,4 +39,6 @@ def send_email():
         print(f"Error al enviar correo: {e}")
 
 
-window.open_window(send_email)
+# use example
+# import window
+# window.open_window(send_email)

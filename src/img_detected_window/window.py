@@ -1,12 +1,11 @@
 import tkinter as tk
 
 
-# Titulo y dimensiones de la ventana
 def open_window(send_email):
     ventana = tk.Tk()
     ventana.title("Enviar Correo")
     ventana.geometry("200x100")
-    # aca es el texto que va a mostrar
+
     texto = "¿Quieres enviar el correo?"
     etiqueta = tk.Label(ventana, text=texto)
 
