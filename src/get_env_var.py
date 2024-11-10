@@ -11,7 +11,7 @@ class Credentials:
     email_server_password: str
 
 
-def get_credentials() -> Credentials:
+def __get_credentials() -> Credentials:
     config_path = Path(".") / __FILE_NAME
     if not config_path.exists():
         raise FileNotFoundError(
@@ -29,3 +29,6 @@ def get_credentials() -> Credentials:
             raise KeyError(f"{key} not found in the {__FILE_NAME} file or is empty")
 
     return Credentials(**config)
+
+
+credentials = __get_credentials()
