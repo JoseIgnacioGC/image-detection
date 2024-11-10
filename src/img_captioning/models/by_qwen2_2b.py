@@ -6,17 +6,6 @@ from src.img_captioning.utils import (
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
-# https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct Accurate
-# https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct Less accurate
-
-"""
-    ERROR: ValueError: You are trying to offload the whole model to the disk. Please use the `disk_offload` function instead.
-    - https://discuss.huggingface.co/t/valueerror-you-are-trying-to-offload-the-whole-model-to-the-disk-please-use-the-disk-offload-function-instead/66687/6
-    - https://medium.com/@sridevi17j/resolving-valueerror-you-are-trying-to-offload-the-whole-model-to-the-disk-70d4e8138797
-    - https://github.com/huggingface/accelerate/issues/2129
-    - https://stackoverflow.com/questions/77701433/valueerror-you-are-trying-to-offload-the-whole-model-to-the-disk-please-use-th
-"""
-
 
 def charge_model() -> ProcessorModel:
     model = None
