@@ -4,10 +4,14 @@ from src.capture_image import convert_opencv_to_pil
 from src.img_captioning.model_controller import charge_model
 from src.shell_question import get_processor_option
 from src.img_captioning.img_description_controller import generate_image_description
+from src.utils import set_timer_in_seconds
+
+from datetime import datetime
 
 import cv2
 from cv2.typing import Scalar
 from queue import Queue
+
 
 processor_option = get_processor_option()
 processor_and_model = charge_model(processor_option)
@@ -34,8 +38,12 @@ FONT_THICKNESS = 1
 
 image_description = "Procesando imagen..."
 image_description_color: Scalar = (0, 255, 0)
+
 generated_description_queue: Queue[str] = Queue()
 processing_img = False
+processing_start_time = datetime.now()
+has_one_second_passed = set_timer_in_seconds(1)
+
 
 while True:
     ret, frame = video_capture.read()
@@ -56,6 +64,7 @@ while True:
                 for i in range(0, len(image_description), 60)
             ]
         )
+        processing_start_time = datetime.now()
         processing_img = False
 
     display_frame = cv2.copyMakeBorder(
@@ -90,7 +99,7 @@ while True:
 
     cv2.imshow("camara", display_frame)
 
-    if not processing_img:
+    if has_one_second_passed(processing_start_time) and not processing_img:
         processing_img = True
         pil_image = convert_opencv_to_pil(frame)
         params = ImageDescriptionParams(pil_image, processor_and_model)
