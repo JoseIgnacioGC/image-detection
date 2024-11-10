@@ -1,9 +1,9 @@
-from typing import cast
 from src.img_captioning.utils import (
-    IMAGE_CONDITION,
     ImageDescriptionParams,
     ProcessorModel,
 )
+
+from random import choice
 
 import torch
 from transformers import BlipProcessor, BlipForConditionalGeneration
@@ -21,24 +21,31 @@ def charge_model() -> ProcessorModel:
             "Salesforce/blip-image-captioning-large"
         )
 
-    processor = cast(
-        BlipProcessor,
-        BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large"),
-    )
+    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
 
     return ProcessorModel(processor=processor, model=model)
 
 
 def generate_image_description(params: ImageDescriptionParams) -> str:
-    processor = params.ProcessorModel.processor
-    model = params.ProcessorModel.model
+    _processor = params.ProcessorModel.processor
+    _model = params.ProcessorModel.model
 
-    inputs = processor(params.raw_image, IMAGE_CONDITION, return_tensors="pt")
-    if torch.cuda.is_available():
-        inputs = inputs.to("cuda", torch.float16)
+    # inputs = processor(params.raw_image, IMAGE_CONDITION, return_tensors="pt")
+    # if torch.cuda.is_available():
+    #     inputs = inputs.to("cuda", torch.float16)
 
-    out = model.generate(**inputs)  # max_new_tokens=100
+    # out = model.generate(**inputs)  # max_new_tokens=100
 
-    description = cast(str, processor.decode(out[0], skip_special_tokens=True))
+    # description = cast(str, processor.decode(out[0], skip_special_tokens=True))
 
-    return description
+    # structure:  {"image_description": "your description", "is_a_crime": true/false}
+    return choice(
+        (
+            ('{"image_description": "a person with  long hair", "is_a_crime": false}'),
+            ('{"image_description": "a person with a gun", "is_a_crime": true}'),
+            ('{"image_description": "a person with a knife", "is_a_crime": true}'),
+            ('{"image_description: (23, 34), "is_a_crime": (32, 53)}'),
+            ('{"image_description": bad format, "is_a_crime": false}'),
+            ('{"image_description": "bad format", "is_a_crime": true'),
+        )
+    )
