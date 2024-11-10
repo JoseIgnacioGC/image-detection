@@ -26,6 +26,21 @@ def charge_model() -> ProcessorModel:
     return ProcessorModel(processor=processor, model=model)
 
 
+fake_response = (
+    ('{"image_description": "1 a person with  long hair", "is_a_crime": false}'),
+    ('{"image_description": "2 a person with  long hair", "is_a_crime": false}'),
+    ('{"image_description": "3 a person with  long hair", "is_a_crime": false}'),
+    ('{"image_description": "1 a person with a gun", "is_a_crime": true}'),
+    ('{"image_description": "2 a person with a gun", "is_a_crime": true}'),
+    ('{"image_description": "3 a person with a gun", "is_a_crime": true}'),
+    ('{"image_description": "5 a person with a knife", "is_a_crime": true}'),
+    ('{"image_description": "bad format", "is_a_crime": 1234}'),
+    ('{"image_description": "2 bad format", "is_a_crime": 1234}'),
+    ('{"image_description: (23, 34), "is_a_crime": (32, 53)}'),
+    ('{"image_description": "bad format", "is_a_crime": true'),
+)
+
+
 def generate_image_description(params: ImageDescriptionParams) -> str:
     _processor = params.ProcessorModel.processor
     _model = params.ProcessorModel.model
@@ -39,13 +54,4 @@ def generate_image_description(params: ImageDescriptionParams) -> str:
     # description = cast(str, processor.decode(out[0], skip_special_tokens=True))
 
     # structure:  {"image_description": "your description", "is_a_crime": true/false}
-    return choice(
-        (
-            ('{"image_description": "a person with  long hair", "is_a_crime": false}'),
-            ('{"image_description": "a person with a gun", "is_a_crime": true}'),
-            ('{"image_description": "a person with a knife", "is_a_crime": true}'),
-            ('{"image_description: (23, 34), "is_a_crime": (32, 53)}'),
-            ('{"image_description": bad format, "is_a_crime": false}'),
-            ('{"image_description": "bad format", "is_a_crime": true'),
-        )
-    )
+    return choice(fake_response)

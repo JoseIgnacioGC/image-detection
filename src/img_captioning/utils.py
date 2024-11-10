@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
-from PIL.Image import Image
 
 if TYPE_CHECKING:
+    from PIL.Image import Image
     from transformers.modeling_utils import PreTrainedModel
     from transformers import BlipProcessor
 
@@ -15,7 +15,7 @@ class ProcessorModel:
 
 @dataclass
 class ImageDescriptionParams:
-    raw_image: Image
+    raw_image: "Image"
     ProcessorModel: ProcessorModel
 
 
