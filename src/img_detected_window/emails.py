@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from src.get_env_vars import credentials
+from src.get_credentials import credentials
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
