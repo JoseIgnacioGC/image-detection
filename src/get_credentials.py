@@ -11,6 +11,7 @@ __FILE_NAME = "credentials.yml"
 class Credentials:
     email_server_email: str
     email_server_password: str
+    email_to_send_notifications: str
 
 
 def __get_credentials() -> Credentials:
@@ -31,6 +32,5 @@ def __get_credentials() -> Credentials:
             raise KeyError(f"{key} not found in the {__FILE_NAME} file or is empty")
 
     return Credentials(**config)
-
 
 credentials = __get_credentials()

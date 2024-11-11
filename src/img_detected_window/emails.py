@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from src.get_credentials import credentials
+import re
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -7,19 +8,28 @@ from email.mime.image import MIMEImage
 from email.header import Header
 from email.utils import formataddr
 import smtplib
-
+patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
 def send_email(image_path: str, image_description: str):
     smtp_server = "smtp.gmail.com"
     smtp_port = 465
     username = credentials.email_server_email
     password = credentials.email_server_password
+    email_to_send_notications = credentials.email_to_send_notifications
+
+    if (re.match(patron, email_to_send_notications)):
+        pass
+    else:
+        print("correo invalido, voy a poner el que yo quiera")
+        email_to_send_notications = "isasmendi223@gmail.com"
+
+
     msg = MIMEMultipart()
 
     msg["From"] = formataddr(
         (str(Header("Alerta: Matan a un amigo tuyo", "utf-8")), username)
     )
-    msg["To"] = "isasmendi223@gmail.com"
+    msg["To"] = email_to_send_notications
     msg["Subject"] = str(Header("⚠️ ¡Hay una amenaza! ⚠️", "utf-8"))
 
     email_body = f"Situación:\n\n{image_description}".encode(
@@ -36,7 +46,6 @@ def send_email(image_path: str, image_description: str):
             msg.attach(image)
     except Exception as e:
         print(f"No se pudo adjuntar la imagen: {e}")
-    print(f"Mensaje descripción:\nasd{image_description}asd")
     try:
         with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
             server.login(username, password)
