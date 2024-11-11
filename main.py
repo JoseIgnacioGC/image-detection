@@ -33,8 +33,11 @@ processing_img = False
 processing_start_time = datetime.now()
 has_one_second_passed = set_timer_in_seconds(1)
 
+image_capture_path_crime = "resources/crimeImage/imagen_criminal.jpg"
+
 overlay_image = cv2.imread(str(RESOURCES_DIR / "crime!!.png"))
 overlay_image = cv2.resize(overlay_image, (50, 50))
+display_police_emoji = False
 
 while True:
     ret, frame = video_capture.read()
@@ -59,15 +62,20 @@ while True:
         print(model_response)
         if model_response.is_a_crime:
             panic_mode = True
+            cv2.imwrite(image_capture_path_crime, frame)
+            display_police_emoji = True
+        else:
+            display_police_emoji = False
 
-    if panic_mode:
-        panic_mode = False
-
+    if display_police_emoji:
         overlay_height, overlay_width = overlay_image.shape[:2]
         y_offset, x_offset = 10, frame.shape[1] - overlay_width - 10
         y1, y2 = y_offset, y_offset + overlay_height
         x1, x2 = x_offset, x_offset + overlay_width
         frame[y1:y2, x1:x2] = overlay_image
+
+    if panic_mode:
+        panic_mode = False
 
         image_capture_path = str(RESOURCES_DIR / "imagen.png")
         cv2.imwrite(image_capture_path, frame)
@@ -78,7 +86,7 @@ while True:
                 image_capture_path,
                 model_response.image_description,
                 lambda: send_email(
-                    image_capture_path, model_response.image_description
+                    image_capture_path_crime, model_response.image_description
                 ),
             ),
         ).start()

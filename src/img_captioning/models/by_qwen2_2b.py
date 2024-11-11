@@ -72,4 +72,4 @@ def generate_image_description(params: ImageDescriptionParams) -> str:
         clean_up_tokenization_spaces=False,
     )
 
-    return model_response
+    return model_response[0]

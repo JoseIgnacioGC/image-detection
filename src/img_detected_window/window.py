@@ -32,17 +32,17 @@ def open_window(image_path: str, image_description: str, send_email_callback: An
     description_text.config(state=tk.DISABLED)
     description_text.pack(padx=10, pady=10)
 
-    boton_enviar = tk.Button(
+    send_button = tk.Button(
         window,
         text="Enviar",
         command=lambda: [send_email_callback(), close_window(window)],
     )
-    boton_enviar.pack(side=tk.LEFT, padx=20)
+    send_button.pack(side=tk.LEFT, padx=20)
 
-    boton_cancelar = tk.Button(
+    cancel_button = tk.Button(
         window, text="Cancelar", command=lambda: close_window(window)
     )
-    boton_cancelar.pack(side=tk.RIGHT, padx=20)
+    cancel_button.pack(side=tk.RIGHT, padx=20)
 
     window.protocol("WM_DELETE_WINDOW", lambda: close_window(window))
     window.mainloop()
