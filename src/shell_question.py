@@ -5,13 +5,11 @@ from readchar import readkey, key
 
 class ProcessorOption(Enum):
     Qwen2_2B = auto()
-    Salesforce = auto()
 
 
 __options = tuple(ProcessorOption)
 __descriptions = {
     ProcessorOption.Qwen2_2B: "Qwen2_2B (accurated)",
-    ProcessorOption.Salesforce: "Salesforce (old)",
 }
 
 
@@ -23,6 +21,9 @@ def __print_options(chosen_option: ProcessorOption):
 
 
 def get_processor_option() -> ProcessorOption:
+    if len(__options) == 1:
+        return __options[0]
+
     chosen_option: ProcessorOption = __options[0]
 
     while True:
