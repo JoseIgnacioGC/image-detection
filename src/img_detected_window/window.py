@@ -1,9 +1,11 @@
 import tkinter as tk
+from typing import Any
 from PIL import Image, ImageTk
 
 window_open = False
 
-def open_window(image_path, image_description, send_email_callback):
+
+def open_window(image_path: str, image_description: str, send_email_callback: Any):
     global window_open
     if window_open:
         return
@@ -30,14 +32,21 @@ def open_window(image_path, image_description, send_email_callback):
     description_text.config(state=tk.DISABLED)
     description_text.pack(padx=10, pady=10)
 
-    boton_enviar = tk.Button(window, text="Enviar", command=lambda: [send_email_callback(), close_window(window)])
+    boton_enviar = tk.Button(
+        window,
+        text="Enviar",
+        command=lambda: [send_email_callback(), close_window(window)],
+    )
     boton_enviar.pack(side=tk.LEFT, padx=20)
 
-    boton_cancelar = tk.Button(window, text="Cancelar", command=lambda: close_window(window))
+    boton_cancelar = tk.Button(
+        window, text="Cancelar", command=lambda: close_window(window)
+    )
     boton_cancelar.pack(side=tk.RIGHT, padx=20)
 
     window.protocol("WM_DELETE_WINDOW", lambda: close_window(window))
     window.mainloop()
+
 
 def close_window(window):
     global window_open

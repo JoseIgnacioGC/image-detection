@@ -40,7 +40,7 @@ conversation = [
             },
             {
                 "type": "text",
-                "text": 'Is a crime being committed in the following image (count even if it\'s an image of a phone). Answer using the format ["img description", true/false].',
+                "text": 'Is a crime being committed in the following image (count even if it\'s an image of a phone). Answer using the format ["img description", true/false if is a crime].',
             },
         ],
     }
@@ -66,14 +66,10 @@ def generate_image_description(params: ImageDescriptionParams) -> str:
         out_ids[len(in_ids) :]
         for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
     ]
-    description = processor.batch_decode(
+    model_response = processor.batch_decode(
         generated_ids_trimmed,
         skip_special_tokens=True,
         clean_up_tokenization_spaces=False,
     )
 
-    description = str(description[0]).split("\n")
-    with open("resources/logs.txt", "a") as file:
-        file.write(f"\n{description}")
-
-    return description
+    return model_response

@@ -1,3 +1,7 @@
+from src.img_captioning.process_model_response import (
+    ModelResponse,
+    process_model_response,
+)
 from src.shell_question import get_processor_option
 from src.async_utils import run_in_background
 from src.img_captioning.utils import ImageDescriptionParams
@@ -13,6 +17,7 @@ import cv2
 from queue import Queue
 import threading
 
+
 processor_option = get_processor_option()
 processor_and_model = charge_model(processor_option)
 print(f"Model {processor_option.name} ready\n")
@@ -22,6 +27,7 @@ video_capture = cv2.VideoCapture(0)
 panic_mode = False
 
 model_response_queue: Queue[str] = Queue()
+model_response = ModelResponse("", is_a_crime=False)
 
 processing_img = False
 processing_start_time = datetime.now()
@@ -41,41 +47,41 @@ while True:
         print("Terminando programa...")
         break
 
-    image_description = ""
+    model_response_raw = ""
     if not model_response_queue.empty():
-        image_description = model_response_queue.get()
+        model_response_raw = model_response_queue.get()
         processing_start_time = datetime.now()
         processing_img = False
 
-    if image_description != "":
-        print(image_description)
-        image_description = str(image_description)
-        if "True" in image_description or "True. " in image_description:
+    if model_response_raw != "":
+        model_response_raw = model_response_raw
+        model_response = process_model_response(model_response_raw)
+        print(model_response)
+        if model_response.is_a_crime:
             panic_mode = True
 
     if panic_mode:
+        panic_mode = False
+
         overlay_height, overlay_width = overlay_image.shape[:2]
         y_offset, x_offset = 10, frame.shape[1] - overlay_width - 10
         y1, y2 = y_offset, y_offset + overlay_height
         x1, x2 = x_offset, x_offset + overlay_width
         frame[y1:y2, x1:x2] = overlay_image
 
-        image_capture_path = "resources/imagen.png"
+        image_capture_path = str(RESOURCES_DIR / "imagen.png")
         cv2.imwrite(image_capture_path, frame)
 
-        if image_description == "":
-            print("esta vacio el mensaje")
-        else:
-            threading.Thread(
-                target=open_window,
-                args=(
-                    image_capture_path,
-                    image_description,
-                    lambda: send_email(image_capture_path, image_description),
+        threading.Thread(
+            target=open_window,
+            args=(
+                image_capture_path,
+                model_response.image_description,
+                lambda: send_email(
+                    image_capture_path, model_response.image_description
                 ),
-            ).start()
-
-        panic_mode = False
+            ),
+        ).start()
 
     cv2.imshow("camara", frame)
 
