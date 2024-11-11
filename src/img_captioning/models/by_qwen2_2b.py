@@ -19,23 +19,12 @@ from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
 
 def charge_model() -> ProcessorModel:
-    model = None
-    if torch.cuda.is_available():
-        model = Qwen2VLForConditionalGeneration.from_pretrained(
-            "Qwen/Qwen2-VL-2B-Instruct",
-            torch_dtype=torch.bfloat16,
-            attn_implementation="flash_attention_2",
-            device_map="auto",
-            offload_folder=r"./../../../resources/offload",
-            # offload_state_dict=True,
-        )
-    else:
-        model = Qwen2VLForConditionalGeneration.from_pretrained(
-            "Qwen/Qwen2-VL-2B-Instruct",
-            torch_dtype="auto",
-            device_map="auto",
-            offload_folder=r"./../../../resources/offload",
-        )
+    model = Qwen2VLForConditionalGeneration.from_pretrained(
+        "Qwen/Qwen2-VL-2B-Instruct",
+        torch_dtype="auto",
+        device_map="auto",
+        offload_folder = r"C:/Users/benja/resources/offload",
+    )
 
     min_pixels = 256 * 28 * 28
     max_pixels = 1280 * 28 * 28
@@ -55,7 +44,7 @@ conversation = [
             },
             {
                 "type": "text",
-                "text": "is a crime taking place in the following image?",
+                "text": 'is a crime taking place in the following image? return True or False and a little description',
             },
         ],
     }
@@ -73,9 +62,7 @@ def generate_image_description(params: ImageDescriptionParams) -> str:
 
     inputs = processor(
         text=[text_prompt], images=[image], padding=True, return_tensors="pt"
-    )
-    if torch.cuda.is_available():
-        inputs = inputs.to("cuda")
+    ).to("cuda")
 
     # Inference: Generation of the output
     generated_ids = model.generate(**inputs, max_new_tokens=50)
@@ -88,5 +75,9 @@ def generate_image_description(params: ImageDescriptionParams) -> str:
         skip_special_tokens=True,
         clean_up_tokenization_spaces=False,
     )
+
+    description = str(description[0]).split("\n")
+    with open("resources/logs.txt", "a") as file:
+        file.write(f"\n{description}")
 
     return description
