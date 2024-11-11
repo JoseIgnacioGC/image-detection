@@ -1,35 +1,31 @@
-import torch
 from src.img_captioning.utils import (
     ImageDescriptionParams,
     ProcessorModel,
 )
+from src.utils import RESOURCES_DIR
 
+import torch
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
-
-# https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct Accurate
-# https://huggingface.co/Qwen/Qwen2-VL-2B-Instruct Less accurate
-
-"""
-    ERROR: ValueError: You are trying to offload the whole model to the disk. Please use the `disk_offload` function instead.
-    - https://discuss.huggingface.co/t/valueerror-you-are-trying-to-offload-the-whole-model-to-the-disk-please-use-the-disk-offload-function-instead/66687/6
-    - https://medium.com/@sridevi17j/resolving-valueerror-you-are-trying-to-offload-the-whole-model-to-the-disk-70d4e8138797
-    - https://github.com/huggingface/accelerate/issues/2129
-    - https://stackoverflow.com/questions/77701433/valueerror-you-are-trying-to-offload-the-whole-model-to-the-disk-please-use-th
-"""
 
 
 def charge_model() -> ProcessorModel:
+    if not torch.cuda.is_available():
+        raise ValueError(
+            "CUDA is not available. Hardware incompatible or installation needed."
+        )
+
+    model_name = "Qwen/Qwen2-VL-2B-Instruct"
     model = Qwen2VLForConditionalGeneration.from_pretrained(
-        "Qwen/Qwen2-VL-2B-Instruct",
+        model_name,
         torch_dtype="auto",
         device_map="auto",
-        offload_folder = r"C:/Users/benja/resources/offload",
+        offload_folder=RESOURCES_DIR / "offload",
     )
 
     min_pixels = 256 * 28 * 28
     max_pixels = 1280 * 28 * 28
     processor = AutoProcessor.from_pretrained(
-        "Qwen/Qwen2-VL-2B-Instruct", min_pixels=min_pixels, max_pixels=max_pixels
+        model_name, min_pixels=min_pixels, max_pixels=max_pixels
     )
 
     return ProcessorModel(processor=processor, model=model)
@@ -44,7 +40,7 @@ conversation = [
             },
             {
                 "type": "text",
-                "text": 'is a crime taking place in the following image? return True or False and a little description',
+                "text": 'Is a crime being committed in the following image (count even if it\'s an image of a phone). Answer using the format ["img description", true/false].',
             },
         ],
     }
