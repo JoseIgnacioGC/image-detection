@@ -5,9 +5,6 @@ def charge_model(
     processor_option: ProcessorOption,
 ) -> ProcessorModel:
     match processor_option:
-        case ProcessorOption.Salesforce:
-            from .models import by_salesforce
-            return by_salesforce.charge_model()
         case ProcessorOption.Qwen2_2B:
             from .models import by_qwen2_2b
             return by_qwen2_2b.charge_model()
