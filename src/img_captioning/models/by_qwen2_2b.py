@@ -34,7 +34,7 @@ conversation = [
             },
             {
                 "type": "text",
-                "text": 'Is a crime being committed in the following image (count even if it\'s an image of a phone). Answer using the format ["img description", true/false if is a crime].',
+                "text": 'Is a crime being committed in the following image? (if the image of the crime is shown on a phone, it also counts). Answer using the format (a list with only 2 elements, str and a boolean): ["img description", true if is a crime].',
             },
         ],
     }
