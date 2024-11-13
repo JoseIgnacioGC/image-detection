@@ -9,7 +9,6 @@ venv/
 # Others
 .vscode/
 
-resources/offload/**
-resources/
+data
 
 credentials.yml

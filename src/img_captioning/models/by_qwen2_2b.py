@@ -2,24 +2,18 @@ from src.img_captioning.utils import (
     ImageDescriptionParams,
     ProcessorModel,
 )
-from src.utils import RESOURCES_DIR
+from src.utils import DATA_DIR
 
-import torch
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
 
 def charge_model() -> ProcessorModel:
-    if not torch.cuda.is_available():
-        raise ValueError(
-            "CUDA is not available. Hardware incompatible or installation needed."
-        )
-
     model_name = "Qwen/Qwen2-VL-2B-Instruct"
     model = Qwen2VLForConditionalGeneration.from_pretrained(
         model_name,
         torch_dtype="auto",
         device_map="auto",
-        offload_folder=RESOURCES_DIR / "offload",
+        offload_folder=DATA_DIR / "offload",
     )
 
     min_pixels = 256 * 28 * 28

@@ -1,4 +1,4 @@
-from src.utils import RESOURCES_DIR
+from src.utils import DATA_DIR
 
 import json
 from datetime import datetime
@@ -30,11 +30,11 @@ def process_model_response(model_response_raw: str) -> ModelResponse:
             raise ValueError("Invalid data types in model response")
 
         model_res = ModelResponse(image_description, is_a_crime=is_a_crime)
-        with open(RESOURCES_DIR / "logs.txt", "a") as f:
+        with open(DATA_DIR / "logs.txt", "a") as f:
             f.write(f"{str(model_res)} - {datetime.now().replace(microsecond=0)}\n")
         return model_res
 
     except:
-        with open(RESOURCES_DIR / "error_response_logs.txt", "a") as f:
+        with open(DATA_DIR / "error_response_logs.txt", "a") as f:
             f.write(f"{model_response_raw} - {datetime.now().replace(microsecond=0)}\n")
         return ModelResponse("", is_a_crime=False)

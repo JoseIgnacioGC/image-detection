@@ -8,15 +8,16 @@ from src.img_captioning.utils import ImageDescriptionParams
 from src.capture_image import convert_opencv_to_pil
 from src.img_captioning.model_controller import charge_model
 from src.img_captioning.img_description_controller import generate_image_description
-from src.utils import RESOURCES_DIR, set_timer_in_seconds
 from src.img_detected_window.window import open_window
 from src.img_detected_window.emails import send_email
+from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
 
 from datetime import datetime
 import cv2
 from queue import Queue
 import threading
 
+make_dirs()
 
 processor_option = get_processor_option()
 processor_and_model = charge_model(processor_option)
@@ -33,9 +34,9 @@ processing_img = False
 processing_start_time = datetime.now()
 has_one_second_passed = set_timer_in_seconds(1)
 
-image_capture_path_crime = "resources/crimeImage/imagen_criminal.jpg"
+image_capture_path_crime = str(DATA_DIR / "images/imagen_criminal.jpg")
 
-overlay_image = cv2.imread(str(RESOURCES_DIR / "crime!!.png"))
+overlay_image = cv2.imread(str(RESOURCES_DIR / "images/crime!!.png"))
 overlay_image = cv2.resize(overlay_image, (50, 50))
 display_police_emoji = False
 
@@ -77,7 +78,7 @@ while True:
     if panic_mode:
         panic_mode = False
 
-        image_capture_path = str(RESOURCES_DIR / "imagen.png")
+        image_capture_path = str(DATA_DIR / "images/imagen.png")
         cv2.imwrite(image_capture_path, frame)
 
         threading.Thread(
