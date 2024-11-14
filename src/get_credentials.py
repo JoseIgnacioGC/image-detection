@@ -3,16 +3,12 @@ from src.utils import ROOT_DIR
 from dataclasses import dataclass
 import yaml
 
-
 __FILE_NAME = "credentials.yml"
-
 
 @dataclass
 class Credentials:
     email_server_email: str
     email_server_password: str
-    email_to_send_notifications: str
-
 
 def __get_credentials() -> Credentials:
     credentials_path = ROOT_DIR / __FILE_NAME

@@ -9,8 +9,8 @@ from src.capture_image import convert_opencv_to_pil
 from src.img_captioning.model_controller import charge_model
 from src.img_captioning.img_description_controller import generate_image_description
 from src.img_detected_window.window import open_window
-from src.img_detected_window.emails import send_email
-from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
+from src.img_detected_window.email_sender import send_email
+from src.utils import RESOURCES_DIR, make_dirs, set_timer_in_seconds
 
 from datetime import datetime
 import cv2
@@ -26,15 +26,14 @@ print(f"Model {processor_option.name} ready\n")
 video_capture = cv2.VideoCapture(0)
 
 panic_mode = False
+image_capture_path = "resources/crimeImage/imagen_criminal.jpg"
 
 model_response_queue: Queue[str] = Queue()
 model_response = ModelResponse("", is_a_crime=False)
 
 processing_img = False
 processing_start_time = datetime.now()
-has_one_second_passed = set_timer_in_seconds(1)
-
-image_capture_path_crime = str(DATA_DIR / "images/imagen_criminal.jpg")
+has_one_second_passed = set_timer_in_seconds(3)
 
 overlay_image = cv2.imread(str(RESOURCES_DIR / "images/crime!!.png"))
 overlay_image = cv2.resize(overlay_image, (50, 50))
@@ -61,9 +60,9 @@ while True:
         model_response_raw = model_response_raw
         model_response = process_model_response(model_response_raw)
         print(model_response)
+
         if model_response.is_a_crime:
             panic_mode = True
-            cv2.imwrite(image_capture_path_crime, frame)
             display_police_emoji = True
         else:
             display_police_emoji = False
@@ -78,18 +77,15 @@ while True:
     if panic_mode:
         panic_mode = False
 
-        image_capture_path = str(DATA_DIR / "images/imagen.png")
         cv2.imwrite(image_capture_path, frame)
+        captured_description = model_response.image_description
+
+        def send_email_callback(email):
+            send_email(image_capture_path, captured_description, email)
 
         threading.Thread(
             target=open_window,
-            args=(
-                image_capture_path,
-                model_response.image_description,
-                lambda: send_email(
-                    image_capture_path_crime, model_response.image_description
-                ),
-            ),
+            args=(image_capture_path, captured_description, send_email_callback),
         ).start()
 
     cv2.imshow("camara", frame)

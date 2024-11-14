@@ -3,10 +3,10 @@ from typing import Any
 from PIL import Image, ImageTk
 
 window_open = False
-
+email_entry = None
 
 def open_window(image_path: str, image_description: str, send_email_callback: Any):
-    global window_open
+    global window_open, email_entry, send_email_intermediate
     if window_open:
         return
 
@@ -14,7 +14,7 @@ def open_window(image_path: str, image_description: str, send_email_callback: An
 
     window = tk.Tk()
     window.title("Enviar Correo")
-    window.geometry("400x400")
+    window.geometry("400x450")
 
     img = Image.open(image_path)
     img = img.resize((300, 200))
@@ -32,10 +32,20 @@ def open_window(image_path: str, image_description: str, send_email_callback: An
     description_text.config(state=tk.DISABLED)
     description_text.pack(padx=10, pady=10)
 
+    email_label = tk.Label(window, text="Correo:")
+    email_label.pack(pady=5)
+
+    email_entry = tk.Entry(window, width=40)
+    email_entry.pack(padx=10, pady=5)
+
+    def send_email_intermediate():
+        email = email_entry.get()
+        send_email_callback(email)
+
     send_button = tk.Button(
         window,
         text="Enviar",
-        command=lambda: [send_email_callback(), close_window(window)],
+        command=lambda: [send_email_intermediate(), close_window(window)],
     )
     send_button.pack(side=tk.LEFT, padx=20)
 
@@ -47,6 +57,8 @@ def open_window(image_path: str, image_description: str, send_email_callback: An
     window.protocol("WM_DELETE_WINDOW", lambda: close_window(window))
     window.mainloop()
 
+def getEmail():
+    return email_entry.get() if email_entry else ""
 
 def close_window(window):
     global window_open

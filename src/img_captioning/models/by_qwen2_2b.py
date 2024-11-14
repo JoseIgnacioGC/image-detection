@@ -2,18 +2,24 @@ from src.img_captioning.utils import (
     ImageDescriptionParams,
     ProcessorModel,
 )
-from src.utils import DATA_DIR
+from src.utils import RESOURCES_DIR
 
+import torch
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
 
 def charge_model() -> ProcessorModel:
+    if not torch.cuda.is_available():
+        raise ValueError(
+            "CUDA is not available. Hardware incompatible or installation needed."
+        )
+
     model_name = "Qwen/Qwen2-VL-2B-Instruct"
     model = Qwen2VLForConditionalGeneration.from_pretrained(
         model_name,
         torch_dtype="auto",
         device_map="auto",
-        offload_folder=DATA_DIR / "offload",
+        offload_folder=RESOURCES_DIR / "offload",
     )
 
     min_pixels = 256 * 28 * 28
@@ -34,7 +40,7 @@ conversation = [
             },
             {
                 "type": "text",
-                "text": 'Is a crime being committed in the following image? (if the image of the crime is shown on a phone, it also counts). Answer using the format (a list with only 2 elements, str and a boolean): ["img description", true if is a crime].',
+                "text": 'Is a crime being committed in the following image (count even if it\'s an image of a phone). Answer using the format ["img description", true/false if is a crime].',
             },
         ],
     }
