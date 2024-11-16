@@ -6,7 +6,7 @@ from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
 )
-from src.img_captioning.model_controller import get_generate_model_response
+from src.img_captioning.model_controller import generate_model_response
 from src.img_detected_window.window import open_window
 from src.img_detected_window.email_sender import send_email
 
@@ -17,8 +17,6 @@ import threading
 
 make_dirs()
 processor_option = get_processor_option()
-generate_model_response = get_generate_model_response(processor_option)
-
 
 video_capture = cv2.VideoCapture(0)
 
@@ -97,6 +95,7 @@ while True:
         run_in_background(
             generate_model_response,
             callback=process_callback,
+            processor_option=processor_option,
             img=pil_image,
         )
 
