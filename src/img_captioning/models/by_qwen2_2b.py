@@ -1,4 +1,4 @@
-from src.utils import RESOURCES_DIR
+from src.utils import DATA_DIR
 from src.img_captioning.utils import Img
 
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
@@ -9,7 +9,7 @@ model = Qwen2VLForConditionalGeneration.from_pretrained(
     model_name,
     torch_dtype="auto",
     device_map="auto",
-    offload_folder=RESOURCES_DIR / "offload",
+    offload_folder=DATA_DIR / "offload",
 )
 
 min_pixels = 256 * 28 * 28

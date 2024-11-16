@@ -1,7 +1,7 @@
 from src.shell_question import get_processor_option
 from src.async_utils import run_in_background
 from src.capture_image import convert_opencv_to_pil
-from src.utils import RESOURCES_DIR, make_dirs, set_timer_in_seconds
+from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
 from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
@@ -19,10 +19,11 @@ make_dirs()
 processor_option = get_processor_option()
 generate_model_response = get_generate_model_response(processor_option)
 
+
 video_capture = cv2.VideoCapture(0)
 
 panic_mode = False
-image_capture_path = "resources/crimeImage/imagen_criminal.jpg"
+image_capture_path = str(DATA_DIR / "images/imagen_criminal.jpg")
 
 model_response_queue: Queue[str] = Queue()
 model_response = ModelResponse("", is_a_crime=False)
