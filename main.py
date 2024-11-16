@@ -1,16 +1,14 @@
+from src.shell_question import get_processor_option
+from src.async_utils import run_in_background
+from src.capture_image import convert_opencv_to_pil
+from src.utils import RESOURCES_DIR, make_dirs, set_timer_in_seconds
 from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
 )
-from src.shell_question import get_processor_option
-from src.async_utils import run_in_background
-from src.img_captioning.utils import ImageDescriptionParams
-from src.capture_image import convert_opencv_to_pil
-from src.img_captioning.model_controller import charge_model
-from src.img_captioning.img_description_controller import generate_image_description
+from src.img_captioning.model_controller import get_generate_model_response
 from src.img_detected_window.window import open_window
 from src.img_detected_window.email_sender import send_email
-from src.utils import RESOURCES_DIR, make_dirs, set_timer_in_seconds
 
 from datetime import datetime
 import cv2
@@ -18,10 +16,8 @@ from queue import Queue
 import threading
 
 make_dirs()
-
 processor_option = get_processor_option()
-processor_and_model = charge_model(processor_option)
-print(f"Model {processor_option.name} ready\n")
+generate_model_response = get_generate_model_response(processor_option)
 
 video_capture = cv2.VideoCapture(0)
 
@@ -80,7 +76,7 @@ while True:
         cv2.imwrite(image_capture_path, frame)
         captured_description = model_response.image_description
 
-        def send_email_callback(email):
+        def send_email_callback(email: str):
             send_email(image_capture_path, captured_description, email)
 
         threading.Thread(
@@ -93,16 +89,14 @@ while True:
     if has_one_second_passed(processing_start_time) and not processing_img:
         processing_img = True
         pil_image = convert_opencv_to_pil(frame)
-        params = ImageDescriptionParams(pil_image, processor_and_model)
 
         def process_callback(result: str):
             model_response_queue.put(result)
 
         run_in_background(
-            generate_image_description,
+            generate_model_response,
             callback=process_callback,
-            processor_option=processor_option,
-            params=params,
+            img=pil_image,
         )
 
 video_capture.release()

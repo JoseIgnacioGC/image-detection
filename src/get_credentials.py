@@ -1,14 +1,17 @@
 from src.utils import ROOT_DIR
 
+from typing import Any
 from dataclasses import dataclass
 import yaml
 
 __FILE_NAME = "credentials.yml"
 
+
 @dataclass
 class Credentials:
     email_server_email: str
     email_server_password: str
+
 
 def __get_credentials() -> Credentials:
     credentials_path = ROOT_DIR / __FILE_NAME
@@ -17,16 +20,25 @@ def __get_credentials() -> Credentials:
             f"{credentials_path}: file not found\n you should create a {__FILE_NAME}"
         )
 
+    credentials = Credentials.__annotations__
+    credentials_keys = tuple(credentials.keys())
     with open(credentials_path, "r") as f:
-        config = yaml.safe_load(f)
+        config: dict[Any, Any] = yaml.safe_load(f)
 
-    for key in Credentials.__annotations__:
-        value = config.get(key)
-        if isinstance(value, bool):
-            continue
-        if not value:
-            raise KeyError(f"{key} not found in the {__FILE_NAME} file or is empty")
+    if len(config) != len(credentials_keys):
+        raise ValueError(
+            f"Error in {__FILE_NAME}: the file should only have {credentials_keys} keys"
+        )
+
+    for key, value in config.items():
+        if key not in credentials_keys:
+            raise ValueError(f"Error in {__FILE_NAME}: {key} is not a valid")
+        if not isinstance(value, credentials[key]):
+            raise ValueError(
+                f"Error in {__FILE_NAME}: {key} should be of type {credentials[key]}"
+            )
 
     return Credentials(**config)
+
 
 credentials = __get_credentials()

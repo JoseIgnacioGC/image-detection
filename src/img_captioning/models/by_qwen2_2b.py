@@ -1,34 +1,22 @@
-from src.img_captioning.utils import (
-    ImageDescriptionParams,
-    ProcessorModel,
-)
 from src.utils import RESOURCES_DIR
+from src.img_captioning.utils import Img
 
-import torch
 from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
 
 
-def charge_model() -> ProcessorModel:
-    if not torch.cuda.is_available():
-        raise ValueError(
-            "CUDA is not available. Hardware incompatible or installation needed."
-        )
+model_name = "Qwen/Qwen2-VL-2B-Instruct"
+model = Qwen2VLForConditionalGeneration.from_pretrained(
+    model_name,
+    torch_dtype="auto",
+    device_map="auto",
+    offload_folder=RESOURCES_DIR / "offload",
+)
 
-    model_name = "Qwen/Qwen2-VL-2B-Instruct"
-    model = Qwen2VLForConditionalGeneration.from_pretrained(
-        model_name,
-        torch_dtype="auto",
-        device_map="auto",
-        offload_folder=RESOURCES_DIR / "offload",
-    )
-
-    min_pixels = 256 * 28 * 28
-    max_pixels = 1280 * 28 * 28
-    processor = AutoProcessor.from_pretrained(
-        model_name, min_pixels=min_pixels, max_pixels=max_pixels
-    )
-
-    return ProcessorModel(processor=processor, model=model)
+min_pixels = 256 * 28 * 28
+max_pixels = 1280 * 28 * 28
+processor = AutoProcessor.from_pretrained(
+    model_name, min_pixels=min_pixels, max_pixels=max_pixels
+)
 
 
 conversation = [
@@ -46,18 +34,12 @@ conversation = [
     }
 ]
 
+text_prompt = processor.apply_chat_template(conversation, add_generation_prompt=True)
 
-def generate_image_description(params: ImageDescriptionParams) -> str:
-    processor = params.ProcessorModel.processor
-    model = params.ProcessorModel.model
-    image = params.raw_image
 
-    text_prompt = processor.apply_chat_template(
-        conversation, add_generation_prompt=True
-    )
-
+def generate_image_description(img: Img) -> str:
     inputs = processor(
-        text=[text_prompt], images=[image], padding=True, return_tensors="pt"
+        text=[text_prompt], images=[img], padding=True, return_tensors="pt"
     ).to("cuda")
 
     # Inference: Generation of the output
