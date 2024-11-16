@@ -1,8 +1,4 @@
 from typing import Any
-from src.img_captioning.utils import (
-    ImageDescriptionParams,
-    ProcessorModel,
-)
 
 import random
 
@@ -44,9 +40,5 @@ def get_response() -> str:
     return random.choice(valid_responses + invalid_responses)
 
 
-def charge_model(processor_option: Any) -> ProcessorModel:
-    return ProcessorModel(processor=None, model=None)
-
-
-def generate_image_description(processor_option: Any, params: Any):
+def generate_model_response(processor_option: Any, image: Any):
     return get_response()

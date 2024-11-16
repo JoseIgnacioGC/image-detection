@@ -8,4 +8,4 @@ def generate_model_response(
         case ProcessorOption.Qwen2_2B:
             from .models import by_qwen2_2b
             print(f"Model {processor_option.name} ready\n")
-            return by_qwen2_2b.generate_image_description(img)
+            return by_qwen2_2b.generate_model_response(img)

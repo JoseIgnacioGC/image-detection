@@ -37,7 +37,7 @@ conversation = [
 text_prompt = processor.apply_chat_template(conversation, add_generation_prompt=True)
 
 
-def generate_image_description(img: Img) -> str:
+def generate_model_response(img: Img) -> str:
     inputs = processor(
         text=[text_prompt], images=[img], padding=True, return_tensors="pt"
     ).to("cuda")
