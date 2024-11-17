@@ -1,6 +1,8 @@
+from async_utils import run_in_background
 from src.shell_question import ProcessorOption
 from src.img_captioning.utils import Img
 
+@run_in_background
 def generate_model_response(
     processor_option: ProcessorOption, img: Img
 ) -> str: 

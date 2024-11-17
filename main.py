@@ -1,5 +1,4 @@
 from src.shell_question import get_processor_option
-from src.async_utils import run_in_background
 from src.capture_image import convert_opencv_to_pil
 from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
 from src.img_captioning.process_model_response import (
@@ -89,14 +88,8 @@ while True:
         processing_img = True
         pil_image = convert_opencv_to_pil(frame)
 
-        def process_callback(result: str):
-            model_response_queue.put(result)
-
-        run_in_background(
-            generate_model_response,
-            callback=process_callback,
-            processor_option=processor_option,
-            img=pil_image,
+        model_thread, model_response_queue = generate_model_response(
+            processor_option, pil_image
         )
 
 video_capture.release()

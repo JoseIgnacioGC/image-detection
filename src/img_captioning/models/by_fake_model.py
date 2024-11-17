@@ -1,6 +1,9 @@
+from time import sleep
 from typing import Any
 
 import random
+
+from src.async_utils import run_in_background
 
 valid_crime_responses = (
     '["Person pointing gun at camera", true]',
@@ -47,5 +50,9 @@ def get_response() -> str:
     )
 
 
+@run_in_background
 def generate_model_response(processor_option: Any, img: Any):
+    print("s")
+    sleep(10)
+    print("e")
     return get_response()
