@@ -2,8 +2,6 @@
 
 1. Python 3.9-3.12
 
-1. Install [rust](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) in your pc
-
 1. Create the virtual env 
     ```bash
         python -m venv venv
@@ -15,6 +13,13 @@
         venv\Scripts\activate.bat
         # In PowerShell
         venv\Scripts\Activate.ps1
+    ```
+
+1. Install PyTorch depending on your machine components
+    ```bash
+        # Follow the instructions at https://pytorch.org/get-started/locally/
+        # i.e.
+        pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
     ```
 
 1. Install all packages
