@@ -54,7 +54,7 @@ while True:
     if model_response_raw != "":
         model_response_raw = model_response_raw
         model_response = process_model_response(model_response_raw)
-        print(model_response)
+        print(model_response.__dict__)
 
         if model_response.is_a_crime:
             panic_mode = True
