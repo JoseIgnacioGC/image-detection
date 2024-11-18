@@ -1,5 +1,4 @@
 from src.shell_question import get_processor_option
-from src.capture_image import convert_opencv_to_pil
 from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
 from src.img_captioning.process_model_response import (
     ModelResponse,
@@ -15,6 +14,7 @@ from queue import Queue
 import customtkinter as ctk
 import cv2
 import tkinter as tk
+from PIL import Image
 
 
 make_dirs()
@@ -95,7 +95,7 @@ def update_webcam(root: ctk.CTk) -> Any:
 
     if has_one_second_passed(processing_start_time) and not processing_img:
         processing_img = True
-        pil_image = convert_opencv_to_pil(frame)
+        pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
         _model_thread, model_response_queue = generate_model_response(
             processor_option, pil_image
