@@ -26,9 +26,7 @@ overlay_image = cv2.imread(str(RESOURCES_DIR / "images/crime!!.png"))
 overlay_image = cv2.resize(overlay_image, (50, 50))
 
 ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
-ctk.set_default_color_theme(
-    "dark-blue"
-)  # Themes: "blue" (default), "dark-blue", "green"
+ctk.set_default_color_theme("blue")  # Themes: "blue" (default), "dark-blue", "green"
 
 root = ctk.CTk()
 root.title("Crime Scene Detection")
