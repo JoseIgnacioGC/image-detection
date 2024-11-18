@@ -1,13 +1,14 @@
-from typing import Any
-from collections.abc import Callable
+from src.windows.email_sender import send_email
 from src.windows.utils import calcualte_pil_img_proportional_height
 
+from typing import Any
+from collections.abc import Callable
 from pathlib import Path
 from PIL import Image
 import customtkinter as ctk
 import tkinter as tk
 
-SUBJECT = "subject: A crime was detected"
+SUBJECT = "⚠️!Hay una amenaza!⚠️"
 
 
 def set_email_frame(
@@ -53,6 +54,11 @@ def set_email_frame(
         width=60,
         height=35,
         corner_radius=100,
+        command=lambda: (
+            cancel_btn_cb(),
+            email_frame.pack_forget(),
+            send_email(img_path, img_description, email_entry.get()),
+        ),
     )
     send_button.pack(side=tk.LEFT, padx=(0, 10))
 

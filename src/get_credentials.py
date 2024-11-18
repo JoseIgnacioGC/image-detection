@@ -11,6 +11,7 @@ __FILE_NAME = "credentials.yml"
 class Credentials:
     email_server_email: str
     email_server_password: str
+    email_server_send_to: str
 
 
 def __get_credentials() -> Credentials:

@@ -1,7 +1,6 @@
-from typing import Any
 from src.shell_question import get_processor_option
 from src.capture_image import convert_opencv_to_pil
-from src.utils import DATA_DIR, make_dirs, set_timer_in_seconds
+from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
 from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
@@ -10,7 +9,7 @@ from src.img_captioning.model_controller import generate_model_response
 from src.windows.email_frame import set_email_frame
 from src.windows.utils import calculate_cv2_img_proportional_height, cv2_to_pil
 
-
+from typing import Any
 from datetime import datetime
 from queue import Queue
 import customtkinter as ctk
@@ -23,8 +22,8 @@ processor_option = get_processor_option()
 
 has_one_second_passed = set_timer_in_seconds(3)
 image_captured_path = str(DATA_DIR / "images/imagen_criminal.jpg")
-# overlay_image = cv2.imread(str(RESOURCES_DIR / "images/crime!!.png"))
-# overlay_image = cv2.resize(overlay_image, (50, 50))
+overlay_image = cv2.imread(str(RESOURCES_DIR / "images/crime!!.png"))
+overlay_image = cv2.resize(overlay_image, (50, 50))
 
 ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
 ctk.set_default_color_theme(
@@ -56,12 +55,6 @@ def update_webcam(root: ctk.CTk) -> Any:
     if not ret:
         raise Exception("Camera not found")
 
-    img_camera_height = calculate_cv2_img_proportional_height(frame, IMG_CAMERA_WIDTH)
-    pil_img = cv2_to_pil(frame)
-    img_tk = ctk.CTkImage(pil_img, size=(IMG_CAMERA_WIDTH, img_camera_height))
-    camera_label.configure(image=img_tk)
-    camera_label.image = img_tk  # type: ignore
-
     model_response_raw = ""
     if not model_response_queue.empty():
         model_response_raw = model_response_queue.get()
@@ -78,12 +71,12 @@ def update_webcam(root: ctk.CTk) -> Any:
         else:
             display_police_emoji = False
 
-    # if display_police_emoji:
-    #     overlay_height, overlay_width = overlay_image.shape[:2]
-    #     y_offset, x_offset = 10, frame.shape[1] - overlay_width - 10
-    #     y1, y2 = y_offset, y_offset + overlay_height
-    #     x1, x2 = x_offset, x_offset + overlay_width
-    #     frame[y1:y2, x1:x2] = overlay_image
+    if display_police_emoji:
+        overlay_height, overlay_width = overlay_image.shape[:2]
+        y_offset, x_offset = 10, frame.shape[1] - overlay_width - 10
+        y1, y2 = y_offset, y_offset + overlay_height
+        x1, x2 = x_offset, x_offset + overlay_width
+        frame[y1:y2, x1:x2] = overlay_image
 
     if panic_mode and not is_email_frame_open:
         panic_mode = False
@@ -109,6 +102,12 @@ def update_webcam(root: ctk.CTk) -> Any:
         _model_thread, model_response_queue = generate_model_response(
             processor_option, pil_image
         )
+
+    img_camera_height = calculate_cv2_img_proportional_height(frame, IMG_CAMERA_WIDTH)
+    pil_img = cv2_to_pil(frame)
+    img_tk = ctk.CTkImage(pil_img, size=(IMG_CAMERA_WIDTH, img_camera_height))
+    camera_label.configure(image=img_tk)
+    camera_label.image = img_tk  # type: ignore
 
     root.after(10, lambda: update_webcam(root))  # loop
 

@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
-
+from src.async_utils import run_in_background
 from src.get_credentials import credentials
+from pathlib import Path
 import re
 
 from email.mime.multipart import MIMEMultipart
@@ -13,17 +13,16 @@ import smtplib
 patron = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
 
-def send_email(image_path: str, image_description: str, email: str):
+@run_in_background
+def send_email(image_path: str | Path, image_description: str, email: str):
     smtp_server = "smtp.gmail.com"
     smtp_port = 465
     username = credentials.email_server_email
     password = credentials.email_server_password
 
-    if re.match(patron, email):
-        email_to_notificate = email
-    else:
-        print("correo invalido, voy a poner el que yo quiera")
-        email_to_notificate = "isasmendi223@gmail.com"
+    email_to_notificate = (
+        email if re.match(patron, email) else credentials.email_server_send_to
+    )
 
     msg = MIMEMultipart()
     msg["From"] = formataddr(
