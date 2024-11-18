@@ -1,48 +1,66 @@
+from typing import Any
 from src.shell_question import get_processor_option
 from src.capture_image import convert_opencv_to_pil
-from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
+from src.utils import DATA_DIR, make_dirs, set_timer_in_seconds
 from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
 )
 from src.img_captioning.model_controller import generate_model_response
-from src.img_detected_window.window import open_window
-from src.img_detected_window.email_sender import send_email
+from src.windows.email_frame import set_email_frame
+from src.windows.utils import calculate_cv2_img_proportional_height, cv2_to_pil
+
 
 from datetime import datetime
-import cv2
 from queue import Queue
-import threading
+import customtkinter as ctk
+import cv2
+import tkinter as tk
+
 
 make_dirs()
 processor_option = get_processor_option()
 
-video_capture = cv2.VideoCapture(0)
+has_one_second_passed = set_timer_in_seconds(3)
+image_captured_path = str(DATA_DIR / "images/imagen_criminal.jpg")
+# overlay_image = cv2.imread(str(RESOURCES_DIR / "images/crime!!.png"))
+# overlay_image = cv2.resize(overlay_image, (50, 50))
 
-panic_mode = False
-image_capture_path = str(DATA_DIR / "images/imagen_criminal.jpg")
+ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
+ctk.set_default_color_theme(
+    "dark-blue"
+)  # Themes: "blue" (default), "dark-blue", "green"
+
+root = ctk.CTk()
+root.title("Crime Scene Detection")
+root.geometry("800x500")
+root.resizable(False, False)
+# root.iconphoto(False, tk.PhotoImage(file="icon.png"))
+
+cap = cv2.VideoCapture(0)
 
 model_response_queue: Queue[str] = Queue()
 model_response = ModelResponse("", is_a_crime=False)
-
 processing_img = False
 processing_start_time = datetime.now()
-has_one_second_passed = set_timer_in_seconds(3)
-
-overlay_image = cv2.imread(str(RESOURCES_DIR / "images/crime!!.png"))
-overlay_image = cv2.resize(overlay_image, (50, 50))
 display_police_emoji = False
+panic_mode = False
+is_email_frame_open = False
 
-while True:
-    ret, frame = video_capture.read()
-    pressed_key = cv2.waitKey(1) & 0xFF
+IMG_CAMERA_WIDTH = 500
 
+
+def update_webcam(root: ctk.CTk) -> Any:
+    global model_response_queue, display_police_emoji, panic_mode, model_response, processing_start_time, processing_img, is_email_frame_open
+    ret, frame = cap.read()
     if not ret:
-        print("no hay camara")
-        break
-    if pressed_key == ord("q"):
-        print("Terminando programa...")
-        break
+        raise Exception("Camera not found")
+
+    img_camera_height = calculate_cv2_img_proportional_height(frame, IMG_CAMERA_WIDTH)
+    pil_img = cv2_to_pil(frame)
+    img_tk = ctk.CTkImage(pil_img, size=(IMG_CAMERA_WIDTH, img_camera_height))
+    camera_label.configure(image=img_tk)
+    camera_label.image = img_tk  # type: ignore
 
     model_response_raw = ""
     if not model_response_queue.empty():
@@ -51,7 +69,6 @@ while True:
         processing_img = False
 
     if model_response_raw != "":
-        model_response_raw = model_response_raw
         model_response = process_model_response(model_response_raw)
         print(model_response.__dict__)
 
@@ -61,36 +78,58 @@ while True:
         else:
             display_police_emoji = False
 
-    if display_police_emoji:
-        overlay_height, overlay_width = overlay_image.shape[:2]
-        y_offset, x_offset = 10, frame.shape[1] - overlay_width - 10
-        y1, y2 = y_offset, y_offset + overlay_height
-        x1, x2 = x_offset, x_offset + overlay_width
-        frame[y1:y2, x1:x2] = overlay_image
+    # if display_police_emoji:
+    #     overlay_height, overlay_width = overlay_image.shape[:2]
+    #     y_offset, x_offset = 10, frame.shape[1] - overlay_width - 10
+    #     y1, y2 = y_offset, y_offset + overlay_height
+    #     x1, x2 = x_offset, x_offset + overlay_width
+    #     frame[y1:y2, x1:x2] = overlay_image
 
-    if panic_mode:
+    if panic_mode and not is_email_frame_open:
         panic_mode = False
+        is_email_frame_open = True
 
-        cv2.imwrite(image_capture_path, frame)
-        captured_description = model_response.image_description
+        cv2.imwrite(image_captured_path, frame)
+        image_description = model_response.image_description
 
-        def send_email_callback(email: str):
-            send_email(image_capture_path, captured_description, email)
+        def toggle_frame():
+            globals()["is_email_frame_open"] = False
 
-        threading.Thread(
-            target=open_window,
-            args=(image_capture_path, captured_description, send_email_callback),
-        ).start()
-
-    cv2.imshow("camara", frame)
+        set_email_frame(
+            root,
+            image_captured_path,
+            image_description,
+            toggle_frame,
+        )
 
     if has_one_second_passed(processing_start_time) and not processing_img:
         processing_img = True
         pil_image = convert_opencv_to_pil(frame)
 
-        model_thread, model_response_queue = generate_model_response(
+        _model_thread, model_response_queue = generate_model_response(
             processor_option, pil_image
         )
 
-video_capture.release()
-cv2.destroyAllWindows()
+    root.after(10, lambda: update_webcam(root))  # loop
+
+
+def set_camera_frame(root: ctk.CTk):
+    camera_frame = ctk.CTkFrame(root, corner_radius=10)
+
+    global camera_label
+
+    camera_label = ctk.CTkLabel(camera_frame, text="")
+    camera_label.pack(expand=True, fill=tk.BOTH)
+    camera_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    update_webcam(root)
+
+
+on_closing = lambda: (cap.release(), root.destroy())
+root.protocol("WM_DELETE_WINDOW", on_closing)
+root.bind("<Escape>", lambda _: on_closing())
+
+set_camera_frame(root)
+
+
+root.mainloop()

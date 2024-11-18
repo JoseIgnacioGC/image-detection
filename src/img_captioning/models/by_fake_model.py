@@ -53,6 +53,6 @@ def get_response() -> str:
 @run_in_background
 def generate_model_response(processor_option: Any, img: Any):
     print("s")
-    sleep(10)
+    sleep(1)
     print("e")
     return get_response()
