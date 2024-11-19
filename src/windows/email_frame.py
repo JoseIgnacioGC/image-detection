@@ -9,6 +9,7 @@ import customtkinter as ctk
 import tkinter as tk
 
 SUBJECT = "⚠️!Hay una amenaza!⚠️"
+IMG_WIDTH = 200
 
 
 def set_email_frame(
@@ -30,9 +31,8 @@ def set_email_frame(
     subject_entry.pack(pady=5, padx=10, fill=tk.X)
 
     image = Image.open(img_path)
-    IMAGE_WIDTH = 200
-    image_height = calcualte_pil_img_proportional_height(image, IMAGE_WIDTH)
-    image = ctk.CTkImage(image, None, size=(IMAGE_WIDTH, image_height))
+    image_height = calcualte_pil_img_proportional_height(image, IMG_WIDTH)
+    image = ctk.CTkImage(image, None, size=(IMG_WIDTH, image_height))
 
     image_label = ctk.CTkLabel(email_frame, image=image, text="")
     image_label.image = image  # type: ignore

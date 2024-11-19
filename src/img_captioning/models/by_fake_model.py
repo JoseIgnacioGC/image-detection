@@ -44,7 +44,8 @@ invalid_responses = (
 
 
 def get_response() -> str:
-    return random.choice(valid_crime_responses)
+    # return random.choice(valid_crime_responses)
+    return random.choice(valid_crime_responses + valid_normal_responses)
     return random.choice(
         valid_crime_responses + valid_normal_responses + invalid_responses
     )
@@ -52,7 +53,5 @@ def get_response() -> str:
 
 @run_in_background
 def generate_model_response(processor_option: Any, img: Any):
-    print("s")
     sleep(1)
-    print("e")
     return get_response()

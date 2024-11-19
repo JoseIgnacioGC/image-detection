@@ -5,8 +5,7 @@ from src.img_captioning.process_model_response import (
     process_model_response,
 )
 
-# from src.img_captioning.model_controller import generate_model_response
-from src.img_captioning.models.by_fake_model import generate_model_response
+from src.img_captioning.model_controller import generate_model_response
 from src.windows.email_frame import set_email_frame
 from src.windows.utils import calculate_cv2_img_proportional_height, cv2_to_pil
 
@@ -38,11 +37,12 @@ root.resizable(False, False)
 cap = cv2.VideoCapture(0)
 
 global_is_email_frame_open = False
-IMG_CAMERA_WIDTH = 600
+WEB_CAM_IMG_WIDTH = 600
 
 
 def update_webcam(
     root: ctk.CTk,
+    camera_label: ctk.CTkLabel,
     model_response_queue: Queue[str],
     model_response: ModelResponse,
     processing_start_time: datetime,
@@ -87,7 +87,7 @@ def update_webcam(
         image_description = model_response.image_description
 
         def on_frame_close():
-            globals()["is_email_frame_open"] = False
+            globals()["global_is_email_frame_open"] = False
 
         set_email_frame(
             root,
@@ -104,9 +104,9 @@ def update_webcam(
             processor_option, pil_image
         )
 
-    img_camera_height = calculate_cv2_img_proportional_height(frame, IMG_CAMERA_WIDTH)
+    img_camera_height = calculate_cv2_img_proportional_height(frame, WEB_CAM_IMG_WIDTH)
     pil_img = cv2_to_pil(frame)
-    img_tk = ctk.CTkImage(pil_img, size=(IMG_CAMERA_WIDTH, img_camera_height))
+    img_tk = ctk.CTkImage(pil_img, size=(WEB_CAM_IMG_WIDTH, img_camera_height))
     camera_label.configure(image=img_tk)
     camera_label.image = img_tk  # type: ignore
 
@@ -114,6 +114,7 @@ def update_webcam(
         1,
         lambda: update_webcam(
             root,
+            camera_label,
             model_response_queue,
             model_response,
             processing_start_time,
@@ -126,15 +127,14 @@ def update_webcam(
 
 def set_camera_frame(root: ctk.CTk):
     camera_frame = ctk.CTkFrame(root, corner_radius=10)
-
-    global camera_label
-
     camera_label = ctk.CTkLabel(camera_frame, text="")
+
     camera_label.pack(expand=True, fill=tk.BOTH)
     camera_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     update_webcam(
         root,
+        camera_label=camera_label,
         model_response_queue=Queue(),
         model_response=ModelResponse("", is_a_crime=False),
         processing_start_time=datetime.now(),
