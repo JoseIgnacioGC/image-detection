@@ -15,7 +15,7 @@ def set_email_frame(
     root: ctk.CTk,
     img_path: str | Path,
     img_description: str,
-    cancel_btn_cb: Callable[..., Any],
+    on_fram_close: Callable[..., Any],
 ):
     email_frame = ctk.CTkFrame(root, corner_radius=10)
 
@@ -55,7 +55,7 @@ def set_email_frame(
         height=35,
         corner_radius=100,
         command=lambda: (
-            cancel_btn_cb(),
+            on_fram_close(),
             email_frame.pack_forget(),
             send_email(img_path, img_description, email_entry.get()),
         ),
@@ -70,7 +70,7 @@ def set_email_frame(
         width=60,
         height=35,
         corner_radius=100,
-        command=lambda: (cancel_btn_cb(), email_frame.pack_forget()),
+        command=lambda: (on_fram_close(), email_frame.pack_forget()),
     )
     cancel_button.pack(side=tk.LEFT, padx=(10, 0))
 

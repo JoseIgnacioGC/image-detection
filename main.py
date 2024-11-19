@@ -4,11 +4,12 @@ from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
 )
-from src.img_captioning.model_controller import generate_model_response
+
+# from src.img_captioning.model_controller import generate_model_response
+from src.img_captioning.models.by_fake_model import generate_model_response
 from src.windows.email_frame import set_email_frame
 from src.windows.utils import calculate_cv2_img_proportional_height, cv2_to_pil
 
-from typing import Any
 from datetime import datetime
 from queue import Queue
 import customtkinter as ctk
@@ -36,19 +37,21 @@ root.resizable(False, False)
 
 cap = cv2.VideoCapture(0)
 
-model_response_queue: Queue[str] = Queue()
-model_response = ModelResponse("", is_a_crime=False)
-processing_img = False
-processing_start_time = datetime.now()
-display_police_emoji = False
-panic_mode = False
-is_email_frame_open = False
-
-IMG_CAMERA_WIDTH = 500
+global_is_email_frame_open = False
+IMG_CAMERA_WIDTH = 600
 
 
-def update_webcam(root: ctk.CTk) -> Any:
-    global model_response_queue, display_police_emoji, panic_mode, model_response, processing_start_time, processing_img, is_email_frame_open
+def update_webcam(
+    root: ctk.CTk,
+    model_response_queue: Queue[str],
+    model_response: ModelResponse,
+    processing_start_time: datetime,
+    display_police_emoji: bool,
+    panic_mode: bool,
+    processing_img: bool,
+):
+    global global_is_email_frame_open
+
     ret, frame = cap.read()
     if not ret:
         raise Exception("Camera not found")
@@ -76,21 +79,21 @@ def update_webcam(root: ctk.CTk) -> Any:
         x1, x2 = x_offset, x_offset + overlay_width
         frame[y1:y2, x1:x2] = overlay_image
 
-    if panic_mode and not is_email_frame_open:
+    if panic_mode and not global_is_email_frame_open:
         panic_mode = False
-        is_email_frame_open = True
+        global_is_email_frame_open = True
 
         cv2.imwrite(image_captured_path, frame)
         image_description = model_response.image_description
 
-        def toggle_frame():
+        def on_frame_close():
             globals()["is_email_frame_open"] = False
 
         set_email_frame(
             root,
             image_captured_path,
             image_description,
-            toggle_frame,
+            on_frame_close,
         )
 
     if has_one_second_passed(processing_start_time) and not processing_img:
@@ -107,7 +110,18 @@ def update_webcam(root: ctk.CTk) -> Any:
     camera_label.configure(image=img_tk)
     camera_label.image = img_tk  # type: ignore
 
-    root.after(10, lambda: update_webcam(root))  # loop
+    root.after(
+        1,
+        lambda: update_webcam(
+            root,
+            model_response_queue,
+            model_response,
+            processing_start_time,
+            display_police_emoji,
+            panic_mode,
+            processing_img,
+        ),
+    )  # loop
 
 
 def set_camera_frame(root: ctk.CTk):
@@ -119,7 +133,15 @@ def set_camera_frame(root: ctk.CTk):
     camera_label.pack(expand=True, fill=tk.BOTH)
     camera_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-    update_webcam(root)
+    update_webcam(
+        root,
+        model_response_queue=Queue(),
+        model_response=ModelResponse("", is_a_crime=False),
+        processing_start_time=datetime.now(),
+        display_police_emoji=False,
+        panic_mode=False,
+        processing_img=False,
+    )
 
 
 on_closing = lambda: (cap.release(), root.destroy())
