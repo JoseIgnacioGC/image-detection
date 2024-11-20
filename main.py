@@ -34,7 +34,7 @@ ctk.set_default_color_theme("blue")  # Themes: "blue" (default), "dark-blue", "g
 
 root = ctk.CTk()
 root.title("Crime Scene Detection")
-root.geometry("800x500")
+root.geometry("900x600")
 root.resizable(False, False)
 # root.iconphoto(False, tk.PhotoImage(file=RESOURCES_DIR / "images/icon.png"))
 on_closing = lambda: (cap.release(), root.destroy())
