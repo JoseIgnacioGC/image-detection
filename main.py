@@ -4,7 +4,7 @@ from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
 )
-from src.img_captioning.model_controller import generate_model_response
+from src.img_captioning.model_controller import initialize_model_generator
 from src.windows.email_frame import set_email_frame
 from src.windows.utils import calculate_cv2_img_proportional_height, cv2_to_pil
 
@@ -17,6 +17,7 @@ from PIL import Image
 
 make_dirs()
 processor_option = get_processor_option()
+generate_model_response = initialize_model_generator(processor_option)
 has_one_second_passed = set_timer_in_seconds(3)
 
 image_captured_path = str(DATA_DIR / "images/imagen_criminal.jpg")
@@ -98,9 +99,7 @@ def update_webcam(
         img_processing_start_time = datetime.now()
         pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-        _model_thread, model_response_queue = generate_model_response(
-            processor_option, pil_image
-        )
+        _model_thread, model_response_queue = generate_model_response(pil_image)
 
     pil_img = cv2_to_pil(frame)
     img_tk = ctk.CTkImage(pil_img, size=(WEB_CAM_IMG_WIDTH, web_cam_img_height))

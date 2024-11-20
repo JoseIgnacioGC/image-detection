@@ -52,6 +52,10 @@ def get_response() -> str:
 
 
 @run_in_background
-def generate_model_response(processor_option: Any, img: Any):
+def generate_model_response(img: Any):
     sleep(1)
     return get_response()
+
+
+def initialize_model_generator(processor_option: Any):
+    return generate_model_response
