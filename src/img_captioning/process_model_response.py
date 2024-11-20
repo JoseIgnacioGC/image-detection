@@ -31,7 +31,9 @@ def process_model_response(model_response_raw: str) -> ModelResponse:
 
         model_res = ModelResponse(image_description, is_a_crime=is_a_crime)
         with open(DATA_DIR / "logs.txt", "a") as f:
-            f.write(f"{str(model_res)} - {datetime.now().replace(microsecond=0)}\n")
+            f.write(
+                f"{str(model_res.__dict__)} - {datetime.now().replace(microsecond=0)}\n"
+            )
         return model_res
 
     except:
