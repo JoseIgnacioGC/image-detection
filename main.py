@@ -13,7 +13,7 @@ from queue import Queue
 import customtkinter as ctk
 import cv2
 import tkinter as tk
-from PIL import Image
+from PIL import Image, ImageTk
 
 make_dirs()
 processor_option = get_processor_option()
@@ -37,16 +37,14 @@ root = ctk.CTk()
 root.title("Crime Scene Detection")
 root.geometry("900x600")
 root.resizable(False, False)
-# root.iconphoto(False, tk.PhotoImage(file=RESOURCES_DIR / "images/icon.png"))
+root.iconbitmap("resources/images/icon.ico")
 on_closing = lambda: (cap.release(), root.destroy())
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.bind("<Escape>", lambda _: on_closing())
 
-
 WEB_CAM_IMG_WIDTH = 600
 web_cam_img_height = calculate_cv2_img_proportional_height(frame, WEB_CAM_IMG_WIDTH)
 global_is_email_frame_open = False
-
 
 def update_webcam(
     root: ctk.CTk,
