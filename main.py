@@ -10,12 +10,11 @@ from src.windows.utils import calculate_cv2_img_proportional_height, cv2_to_pil
 
 from datetime import datetime
 from queue import Queue
+from ctypes import windll
+from PIL import Image
 import customtkinter as ctk
 import cv2
 import tkinter as tk
-from PIL import Image
-import ctypes
-
 
 make_dirs()
 processor_option = get_processor_option()
@@ -42,7 +41,7 @@ root.resizable(False, False)
 
 root.iconbitmap("resources/images/icon.ico")
 myappid = "mycompany.myproduct.subproduct.version"  # arbitrary string
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 on_closing = lambda: (cap.release(), root.destroy())
 root.protocol("WM_DELETE_WINDOW", on_closing)
