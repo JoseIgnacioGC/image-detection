@@ -35,7 +35,7 @@ ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
 ctk.set_default_color_theme("blue")  # Themes: "blue" (default), "dark-blue", "green"
 
 root = ctk.CTk()
-root.title("Crime Scene Detection")
+root.title("Cámara Inteligente: detector de crímenes en tiempo real")
 root.geometry("900x600")
 root.resizable(False, False)
 

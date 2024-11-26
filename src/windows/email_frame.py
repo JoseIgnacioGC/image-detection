@@ -21,7 +21,7 @@ def set_email_frame(
     email_frame = ctk.CTkFrame(root, corner_radius=10)
 
     email_entry = ctk.CTkEntry(
-        email_frame, placeholder_text="example@gmail.com", border_width=0
+        email_frame, placeholder_text="correo_de_ejemplo@gmail.com", border_width=0
     )
     email_entry.pack(pady=5, padx=10, fill=tk.X)
 
@@ -48,7 +48,7 @@ def set_email_frame(
 
     send_button = ctk.CTkButton(
         button_frame,
-        text="Send",
+        text="Enviar",
         fg_color="dodger blue",
         hover_color="deep sky blue",
         width=60,
@@ -64,7 +64,7 @@ def set_email_frame(
 
     cancel_button = ctk.CTkButton(
         button_frame,
-        text="Cancel",
+        text="Cancelar",
         fg_color="blue",
         hover_color="darkblue",
         width=60,
