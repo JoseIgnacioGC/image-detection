@@ -112,7 +112,7 @@ def update_webcam(
 
     # loop
     root.after(
-        1,
+        17,  # almost 60 fps
         lambda: update_webcam(
             root,
             camera_label,
