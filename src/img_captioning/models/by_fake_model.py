@@ -6,32 +6,31 @@ import random
 from src.async_utils import run_in_background
 
 valid_crime_responses = (
-    '["Person pointing gun at camera", true]',
-    '["Phone showing robbery video", true]',
-    '["Security camera footage of shoplifting", true]',
-    '["Person breaking car window", true]',
-    '["Graffiti on wall in progress", true]',
-    '["Person in ski mask entering window", true]',
-    '["Phone showing illegal drug deal", true]',
-    '["Person picking door lock", true]',
-    '[should not cause an error, "True"]',
-    '["Phone displaying bank robbery", true]',
+    '["Person pointing gun at camera", 5]',
+    '["Phone showing robbery video", 10]',
+    '["Security camera footage of shoplifting", 6]',
+    '["Person breaking car window", 7]',
+    '["Graffiti on wall in progress", 5]',
+    "[should not cause an error, 6]",
+    '["Phone displaying bank robbery", 8]',
 )
 
 valid_normal_responses = (
-    '["Empty parking lot at night", false]',
-    '["Kids playing in park", false]',
-    '["Peaceful protest march", false]',
-    '["Students studying in library", false]',
-    '["Couple walking dog at night", false]',
-    '["Security guard on patrol", false]',
+    '["Empty parking lot at night", 1]',
+    '["Kids playing in park", 3]',
+    '["Peaceful protest march", 2]',
+    '["Students studying in library", 1]',
+    '["Couple walking dog at night", 4]',
+    '["Security guard on patrol", 0]',
 )
 
 
 invalid_responses = (
+    '["Person in ski mask entering window", true]',
+    '["Phone showing illegal drug deal", true]',
+    '["Person picking door lock", true]',
     "Person pointing gun at camera, True",
     '{"desc": "Crime scene", "crime": TRUE}',
-    '["Kids playing in park", 422]',
     "[42, FALSE]",
     "",
     '[false, "Kids playing in park"]',

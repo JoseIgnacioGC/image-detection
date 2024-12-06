@@ -9,7 +9,11 @@ from dataclasses import dataclass
 @dataclass
 class ModelResponse:
     image_description: str
+    crime_probability: int
     is_a_crime: bool
+
+
+HIGH_CRIME_PROBABILITY = 5
 
 
 def process_model_response(model_response_raw: str) -> ModelResponse:
@@ -20,16 +24,18 @@ def process_model_response(model_response_raw: str) -> ModelResponse:
             raise ValueError("Invalid model response structure")
 
         image_description = parsed_list[0]
-        is_a_crime = parsed_list[1]
+        crime_probability = parsed_list[1]
 
         if (
             not isinstance(image_description, str)
             or image_description == ""
-            or not isinstance(is_a_crime, bool)
+            or type(crime_probability) is not int
         ):
             raise ValueError("Invalid data types in model response")
 
-        model_res = ModelResponse(image_description, is_a_crime=is_a_crime)
+        is_a_crime = crime_probability >= HIGH_CRIME_PROBABILITY
+
+        model_res = ModelResponse(image_description, crime_probability, is_a_crime)
         with open(DATA_DIR / "logs.txt", "a") as f:
             f.write(
                 f"{str(model_res.__dict__)} - {datetime.now().replace(microsecond=0)}\n"
@@ -39,4 +45,4 @@ def process_model_response(model_response_raw: str) -> ModelResponse:
     except:
         with open(DATA_DIR / "error_response_logs.txt", "a") as f:
             f.write(f"{model_response_raw} - {datetime.now().replace(microsecond=0)}\n")
-        return ModelResponse("", is_a_crime=False)
+        return ModelResponse("", 0, False)

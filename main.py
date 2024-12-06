@@ -136,7 +136,9 @@ def set_camera_frame(root: ctk.CTk):
         root,
         camera_label=camera_label,
         model_response_queue=Queue(),
-        model_response=ModelResponse("", is_a_crime=False),
+        model_response=ModelResponse(
+            image_description="", crime_probability=0, is_a_crime=False
+        ),
         img_processing_start_time=datetime.now(),
         is_img_processing=False,
         is_panic_mode=False,
