@@ -43,7 +43,7 @@ invalid_responses = (
 
 
 def get_response() -> str:
-    # return random.choice(valid_crime_responses)
+    return random.choice(valid_crime_responses)
     return random.choice(valid_crime_responses + valid_normal_responses)
     return random.choice(
         valid_crime_responses + valid_normal_responses + invalid_responses

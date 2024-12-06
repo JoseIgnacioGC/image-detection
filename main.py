@@ -36,8 +36,9 @@ ctk.set_default_color_theme("blue")  # Themes: "blue" (default), "dark-blue", "g
 
 root = ctk.CTk()
 root.title("Cámara Inteligente: detector de crímenes en tiempo real")
-root.geometry("900x600")
-root.resizable(False, False)
+root.after(0, lambda: root.state("zoomed"))
+root.wm_attributes("-fullscreen", True)
+
 
 root.iconbitmap("resources/images/icon.ico")
 myappid = "mycompany.myproduct.subproduct.version"  # arbitrary string
@@ -47,7 +48,7 @@ on_closing = lambda: (cap.release(), root.destroy())
 root.protocol("WM_DELETE_WINDOW", on_closing)
 root.bind("<Escape>", lambda _: on_closing())
 
-WEB_CAM_IMG_WIDTH = 600
+WEB_CAM_IMG_WIDTH = 900
 web_cam_img_height = calculate_cv2_img_proportional_height(frame, WEB_CAM_IMG_WIDTH)
 global_is_email_frame_open = False
 
