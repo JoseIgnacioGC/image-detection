@@ -26,7 +26,7 @@ conversation = [
                 "type": "image",
             },
             {
-                "text": 'Is there a crime scene in the image? Answer using the following format (2 elements a str and an int): ["description of the image in Spanish", (on a scale from 1 to 10. What is the probability that it is a real crime scene?]',
+                "text": 'Is there a violent scene in the image? (even if is in a cellphone image) Answer using the following format (2 elements a str and an int): ["description of the image", (on a scale from 1 to 10. how much violent there are in the image?]',
             },
         ],
     }

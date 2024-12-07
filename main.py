@@ -70,11 +70,19 @@ def update_webcam(
     is_img_processing: bool,
     is_panic_mode: bool,
 ):
+
     global global_is_email_frame_open
 
     ret, frame = cap.read()
     if not ret:
         raise Exception("Error al capturar frame de la cámara")
+
+    if has_one_second_passed(img_processing_start_time) and not is_img_processing:
+        is_img_processing = True
+        img_processing_start_time = datetime.now()
+        pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+
+        _model_thread, model_response_queue = generate_model_response(pil_image)
 
     results = yolo_model(frame)
     detections = results[0].boxes.xyxy.cpu().numpy()
@@ -118,13 +126,6 @@ def update_webcam(
             model_response.image_description,
             on_frame_close,
         )
-
-    if has_one_second_passed(img_processing_start_time) and not is_img_processing:
-        is_img_processing = True
-        img_processing_start_time = datetime.now()
-        pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-        _model_thread, model_response_queue = generate_model_response(pil_image)
 
     pil_img = cv2_to_pil(frame)
     img_tk = ctk.CTkImage(pil_img, size=(WEB_CAM_IMG_WIDTH, web_cam_img_height))
