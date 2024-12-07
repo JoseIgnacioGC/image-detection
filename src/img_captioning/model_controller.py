@@ -20,4 +20,3 @@ def initialize_model_generator(
 
     print(f"Model {processor_option.name} ready\n")
     return run_in_background(generate_model_response)
-
