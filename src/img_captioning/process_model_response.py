@@ -5,12 +5,17 @@ from datetime import datetime
 from typing import Any
 from dataclasses import dataclass
 
+
 @dataclass
 @dataclass
 class ModelResponse:
     image_description: str
+    crime_probability: int
     is_a_crime: bool
-    crime_probability: float
+
+
+HIGH_CRIME_PROBABILITY = 5
+
 
 def process_model_response(model_response_raw: str) -> ModelResponse:
     try:
@@ -20,16 +25,18 @@ def process_model_response(model_response_raw: str) -> ModelResponse:
             raise ValueError("Invalid model response structure")
 
         image_description = parsed_list[0]
-        is_a_crime = parsed_list[1]
+        crime_probability = parsed_list[1]
 
         if (
-                not isinstance(image_description, str)
-                or image_description == ""
-                or not isinstance(is_a_crime, bool)
+            not isinstance(image_description, str)
+            or image_description == ""
+            or type(crime_probability) is not int
         ):
             raise ValueError("Invalid data types in model response")
 
-        model_res = ModelResponse(image_description, is_a_crime=is_a_crime, crime_probability=0.0)
+        is_a_crime = crime_probability >= HIGH_CRIME_PROBABILITY
+
+        model_res = ModelResponse(image_description, crime_probability, is_a_crime)
         with open(DATA_DIR / "logs.txt", "a") as f:
             f.write(
                 f"{str(model_res.__dict__)} - {datetime.now().replace(microsecond=0)}\n"
@@ -38,5 +45,7 @@ def process_model_response(model_response_raw: str) -> ModelResponse:
 
     except Exception as e:
         with open(DATA_DIR / "error_response_logs.txt", "a") as f:
-            f.write(f"Error: {e} - {model_response_raw} - {datetime.now().replace(microsecond=0)}\n")
-        return ModelResponse("", is_a_crime=False, crime_probability=0.0)
+            f.write(
+                f"Error: {e} - {model_response_raw} - {datetime.now().replace(microsecond=0)}\n"
+            )
+        return ModelResponse("", 0, False)

@@ -26,8 +26,7 @@ conversation = [
                 "type": "image",
             },
             {
-                "type": "text",
-                "text": 'Is a violence scene being committed in the following image (count even if it\'s an image from a phone). Answer using the format ["img description in spanish", true/false if is violence scene].',
+                "text": 'Is there a crime scene in the image? Answer using the following format (2 elements a str and an int): ["description of the image in Spanish", (on a scale from 1 to 10. What is the probability that it is a real crime scene?]',
             },
         ],
     }
@@ -52,6 +51,5 @@ def generate_model_response(img: Img) -> str:
         skip_special_tokens=True,
         clean_up_tokenization_spaces=False,
     )
-    print(model_response)
 
     return model_response[0]
