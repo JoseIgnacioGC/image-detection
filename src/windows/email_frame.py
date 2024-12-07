@@ -8,7 +8,7 @@ from PIL import Image
 import customtkinter as ctk
 import tkinter as tk
 
-SUBJECT = "⚠️!Se Ha Detectado Un Crimen!⚠️"
+SUBJECT = "       ⚠️ Acción sospechosa ⚠️"
 
 IMG_WIDTH = 350
 FONT_SIZE = 20
@@ -36,9 +36,6 @@ def set_email_frame(
     subject.pack(pady=(100, 0), padx=10, fill=tk.X)
 
     email_entry_frame = ctk.CTkFrame(email_frame, fg_color="transparent")
-    ctk.CTkLabel(email_entry_frame, text="para:", font=(None, FONT_SIZE)).pack(
-        side=tk.LEFT, padx=(0, 5)
-    )
     email_entry = ctk.CTkEntry(
         email_entry_frame,
         placeholder_text="participante@gmail.com",
