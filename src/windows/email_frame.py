@@ -1,6 +1,5 @@
 from src.windows.email_sender import send_email
 from src.windows.utils import calcualte_pil_img_proportional_height
-
 from typing import Any
 from collections.abc import Callable
 from pathlib import Path
@@ -8,7 +7,7 @@ from PIL import Image
 import customtkinter as ctk
 import tkinter as tk
 
-SUBJECT = "       ⚠️ Acción sospechosa ⚠️"
+SUBJECT = "           ⚠️ Acción sospechosa ⚠️"
 
 IMG_WIDTH = 350
 FONT_SIZE = 20
@@ -17,11 +16,11 @@ FIELDS_HEIGHT = 40
 IMG_DESCRIPTION_HEIGHT = 150
 
 
-def set_email_frame(
-    root: ctk.CTk,
-    img_path: str | Path,
-    img_description: str,
-    on_fram_close: Callable[..., Any],
+def set_email_frame_with_carousel(
+        root: ctk.CTk,
+        img_paths: list[str | Path],
+        img_description: str,
+        on_frame_close: Callable[..., Any],
 ):
     email_frame = ctk.CTkFrame(root, corner_radius=10)
 
@@ -47,13 +46,49 @@ def set_email_frame(
     email_entry.pack(fill=tk.X)
     email_entry_frame.pack(pady=FIELDS_PADDING, padx=10, fill=tk.X)
 
-    image = Image.open(img_path)
-    image_height = calcualte_pil_img_proportional_height(image, IMG_WIDTH)
-    image = ctk.CTkImage(image, None, size=(IMG_WIDTH, image_height))
+    carousel_frame = ctk.CTkFrame(email_frame, fg_color="transparent")
+    carousel_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-    image_label = ctk.CTkLabel(email_frame, image=image, text="")
-    image_label.image = image  # type: ignore
-    image_label.pack(padx=10, fill=tk.BOTH)
+    img_index = [0]
+
+    def update_image():
+        img_path = img_paths[img_index[0]]
+        image = Image.open(img_path)
+        image_height = calcualte_pil_img_proportional_height(image, IMG_WIDTH)
+        image = ctk.CTkImage(image, None, size=(IMG_WIDTH, image_height))
+        image_label.configure(image=image)
+        image_label.image = image
+
+    def next_image():
+        img_index[0] = (img_index[0] + 1) % len(img_paths)
+        update_image()
+
+    def prev_image():
+        img_index[0] = (img_index[0] - 1) % len(img_paths)
+        update_image()
+
+    prev_button = ctk.CTkButton(
+        carousel_frame,
+        text="◀️",
+        width=40,
+        height=35,
+        command=prev_image,
+    )
+    prev_button.pack(side=tk.LEFT, padx=(0, 10))
+
+    image_label = ctk.CTkLabel(carousel_frame, text="")
+    image_label.pack(side=tk.LEFT, expand=True)
+
+    next_button = ctk.CTkButton(
+        carousel_frame,
+        text="▶️",
+        width=40,
+        height=35,
+        command=next_image,
+    )
+    next_button.pack(side=tk.LEFT, padx=(10, 0))
+
+    update_image()
 
     image_description = ctk.CTkTextbox(
         email_frame,
@@ -77,7 +112,7 @@ def set_email_frame(
         width=80,
         height=35,
         corner_radius=5,
-        command=lambda: (on_fram_close(), email_frame.pack_forget()),
+        command=lambda: (on_frame_close(), email_frame.pack_forget()),
     )
     cancel_button.pack(side=tk.LEFT)
 
@@ -90,9 +125,9 @@ def set_email_frame(
         height=35,
         corner_radius=5,
         command=lambda: (
-            on_fram_close(),
+            on_frame_close(),
             email_frame.pack_forget(),
-            send_email(img_path, img_description, email_entry.get()),
+            send_email(img_paths, img_description, email_entry.get()),
         ),
     )
     send_button.pack(side=tk.LEFT, padx=(10, 0))

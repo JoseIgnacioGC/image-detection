@@ -14,7 +14,7 @@ patron = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 
 
 @run_in_background
-def send_email(image_path: str | Path, image_description: str, email: str):
+def send_email(image_paths: list[str | Path], image_description: str, email: str):
     smtp_server = "smtp.gmail.com"
     smtp_port = 465
     username = credentials.email_server_email
@@ -36,15 +36,16 @@ def send_email(image_path: str | Path, image_description: str, email: str):
     ).decode("utf-8")
     msg.attach(MIMEText(email_body, "plain", "utf-8"))
 
-    try:
-        with open(image_path, "rb") as image_file:
-            image = MIMEImage(image_file.read())
-            image.add_header(
-                "Content-Disposition", "attachment", filename="imagen_capturada.png"
-            )
-            msg.attach(image)
-    except Exception as e:
-        print(f"No se pudo adjuntar la imagen: {e}")
+    for i, image_path in enumerate(image_paths):
+        try:
+            with open(image_path, "rb") as image_file:
+                image = MIMEImage(image_file.read())
+                image.add_header(
+                    "Content-Disposition", "attachment", filename=f"imagen_capturada_{i+1}.png"
+                )
+                msg.attach(image)
+        except Exception as e:
+            print(f"No se pudo adjuntar la imagen {image_path}: {e}")
 
     try:
         with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
