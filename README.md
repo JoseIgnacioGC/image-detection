@@ -2,6 +2,8 @@
 
 1. Python 3.9-3.12
 
+1. Create a `credentials.yml` file based on the `credentials.example.yml` file
+
 1. Create the virtual env 
     ```bash
         python -m venv venv
