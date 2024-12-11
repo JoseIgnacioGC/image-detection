@@ -1,6 +1,6 @@
 from ctypes import windll
 from src.shell_question import get_processor_option
-from src.utils import DATA_DIR, RESOURCES_DIR, make_dirs, set_timer_in_seconds
+from src.utils import DATA_DIR, make_dirs, set_timer_in_seconds
 from src.img_captioning.process_model_response import (
     ModelResponse,
     process_model_response,
@@ -25,42 +25,41 @@ generate_model_response = initialize_model_generator(processor_option)
 has_one_second_passed = set_timer_in_seconds(3)
 
 try:
-    yolo_model = YOLO("yolov8n.pt", verbose=False)
+    yolo_model = YOLO("yolov8n.pt", verbose=False) # verbose esta bug
 except Exception as e:
     raise RuntimeError(f"Error al cargar el modelo YOLOv8: {e}")
-
-captured_images = []
 
 cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 if not ret:
     raise Exception("No se pudo acceder a la cámara")
 
-ctk.set_appearance_mode("Dark")  # Modos: "System" (por defecto), "Dark", "Light"
-ctk.set_default_color_theme("blue")  # Temas: "blue" (por defecto), "dark-blue", "green"
+ctk.set_appearance_mode("Dark")
+ctk.set_default_color_theme("blue")
 
 root = ctk.CTk()
-root.title("Cámara Inteligente: detector de crímenes en tiempo real")
+root.title("Cámara Inteligente: Detección de actividades sospechosas")
 root.after(0, lambda: root.state("zoomed"))
 root.wm_attributes("-fullscreen", True)
-
 root.iconbitmap("resources/images/icon.ico")
-# Para tener un icono en la barra de tareas
+
 myappid = "mycompany.myproduct.subproduct.version"
 windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-on_closing = lambda: (cap.release(), root.destroy())
-root.protocol("WM_DELETE_WINDOW", on_closing)
-root.bind("<Escape>", lambda _: on_closing())
+def close_application():
+    cap.release()
+    root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", close_application)
+root.bind("<Escape>", lambda _: close_application())
 
 WEB_CAM_IMG_WIDTH = 900
 web_cam_img_height = calculate_cv2_img_proportional_height(frame, WEB_CAM_IMG_WIDTH)
 
 global_is_email_frame_open = False
+captured_images = []
 
-
-def capture_additional_images(frame, count=2, delay=1):
-
+def capture_additional_images(count=2, delay=1):
     for i in range(count):
         time.sleep(delay)
         ret, next_frame = cap.read()
@@ -70,16 +69,8 @@ def capture_additional_images(frame, count=2, delay=1):
         cv2.imwrite(image_path, next_frame)
         captured_images.append(image_path)
 
-
-def update_webcam(
-        root: ctk.CTk,
-        camera_label: ctk.CTkLabel,
-        model_response_queue: Queue[str],
-        model_response: ModelResponse,
-        img_processing_start_time: datetime,
-        is_img_processing: bool,
-        is_panic_mode: bool,
-):
+def update_webcam(camera_label, model_response_queue, model_response,
+                  img_processing_start_time, is_img_processing, is_panic_mode):
     global global_is_email_frame_open
 
     ret, frame = cap.read()
@@ -90,7 +81,7 @@ def update_webcam(
         is_img_processing = True
         img_processing_start_time = datetime.now()
         pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-        _model_thread, model_response_queue = generate_model_response(pil_image)
+        _, model_response_queue = generate_model_response(pil_image)
 
     results = yolo_model(frame)
     detections = results[0].boxes.xyxy.cpu().numpy()
@@ -117,10 +108,11 @@ def update_webcam(
         image_captured_path = str(DATA_DIR / "images/imagen_criminal.jpg")
         cv2.imwrite(image_captured_path, frame)
         captured_images.append(image_captured_path)
-        capture_additional_images(frame, count=2, delay=1)
+        capture_additional_images(count=3, delay=1)
 
         def on_frame_close():
-            globals()["global_is_email_frame_open"] = False
+            global global_is_email_frame_open
+            global_is_email_frame_open = False
 
         set_email_frame_with_carousel(
             root, captured_images, model_response.image_description, on_frame_close
@@ -131,29 +123,18 @@ def update_webcam(
     camera_label.configure(image=img_tk)
     camera_label.image = img_tk
 
-    root.after(
-        17,
-        lambda: update_webcam(
-            root,
-            camera_label,
-            model_response_queue,
-            model_response,
-            img_processing_start_time,
-            is_img_processing,
-            is_panic_mode,
-        ),
-    )
+    root.after(17, lambda: update_webcam(
+        camera_label, model_response_queue, model_response,
+        img_processing_start_time, is_img_processing, is_panic_mode
+    ))
 
-
-def set_camera_frame(root: ctk.CTk):
+def set_camera_frame():
     camera_frame = ctk.CTkFrame(root, corner_radius=10)
     camera_label = ctk.CTkLabel(camera_frame, text="")
-
     camera_label.pack(expand=True, fill=tk.BOTH)
     camera_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     update_webcam(
-        root,
         camera_label=camera_label,
         model_response_queue=Queue(),
         model_response=ModelResponse(
@@ -164,6 +145,5 @@ def set_camera_frame(root: ctk.CTk):
         is_panic_mode=False,
     )
 
-
-set_camera_frame(root)
+set_camera_frame()
 root.mainloop()
