@@ -10,7 +10,6 @@ from src.img_captioning.model_controller import initialize_model_generator
 from src.windows.email_frame import set_email_frame_with_carousel
 from src.windows.utils import calculate_cv2_img_proportional_height, cv2_to_pil
 
-from ultralytics import YOLO
 from datetime import datetime
 from queue import Queue
 from PIL import Image
@@ -23,11 +22,6 @@ make_dirs()
 processor_option = get_processor_option()
 generate_model_response = initialize_model_generator(processor_option)
 has_one_second_passed = set_timer_in_seconds(3)
-
-try:
-    yolo_model = YOLO("yolov8n.pt", verbose=False) # verbose esta bug
-except Exception as e:
-    raise RuntimeError(f"Error al cargar el modelo YOLOv8: {e}")
 
 cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
@@ -77,22 +71,13 @@ def update_webcam(camera_label, model_response_queue, model_response,
     if not ret:
         raise Exception("Error al capturar frame de la cámara")
 
+    segmented_frame = segment_person(frame)
+
     if has_one_second_passed(img_processing_start_time) and not is_img_processing:
         is_img_processing = True
         img_processing_start_time = datetime.now()
         pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         _, model_response_queue = generate_model_response(pil_image)
-
-    results = yolo_model(frame)
-    detections = results[0].boxes.xyxy.cpu().numpy()
-    classes = results[0].boxes.cls.cpu().numpy()
-
-    for i, box in enumerate(detections):
-        if int(classes[i]) == 0:  # Clase "persona"
-            x1, y1, x2, y2 = map(int, box)
-            person_crop = frame[y1:y2, x1:x2]
-            segmented_person = segment_person(person_crop)
-            frame[y1:y2, x1:x2] = segmented_person
 
     if not model_response_queue.empty():
         is_img_processing = False
@@ -118,7 +103,7 @@ def update_webcam(camera_label, model_response_queue, model_response,
             root, captured_images, model_response.image_description, on_frame_close
         )
 
-    pil_img = cv2_to_pil(frame)
+    pil_img = cv2_to_pil(segmented_frame)
     img_tk = ctk.CTkImage(pil_img, size=(WEB_CAM_IMG_WIDTH, web_cam_img_height))
     camera_label.configure(image=img_tk)
     camera_label.image = img_tk
