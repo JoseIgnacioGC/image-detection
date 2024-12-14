@@ -25,7 +25,7 @@
 1. Install PyTorch depending on your machine components
     ```bash
         # Follow the instructions at https://pytorch.org/get-started/locally/
-        # i.e.
+        # e.g.
         pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
     ```
 
