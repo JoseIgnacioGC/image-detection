@@ -1,3 +1,8 @@
+
+<p align="center">
+    <img src="./resources/images/logo.png" alt="Logo">
+</p>
+
 # 🛠️ | pre-requisites
 
 1. Python 3.9-3.12
