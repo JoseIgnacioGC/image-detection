@@ -3,6 +3,10 @@
     <img src="./resources/images/logo.png" alt="Logo">
 </p>
 
+After continue reading this:<br>
+This is a minimum viable product for a university work, if u wanna watch
+the recode of project with improvements: <br>[@Mapacheee/Peacekeeper](https://github.com/Mapacheee/Peacekeeper)
+
 # 🛠️ | pre-requisites
 
 1. Python 3.9-3.12
